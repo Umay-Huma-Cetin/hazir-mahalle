@@ -1,0 +1,71 @@
+erDiagram
+    IL ||--o{ ILCE : "içerir"
+    ILCE ||--o{ MAHALLE : "içerir"
+    MAHALLE ||--o{ TOPLANMA_ALANI : "sahip"
+    MAHALLE ||--o{ KULLANICI : "yaşar"
+    MAHALLE ||--o{ ILAN : "panoda"
+    KULLANICI ||--|| KULLANICI_ADRES : "şifreli adres"
+    KULLANICI ||--o{ CIHAZ : "kullanır"
+    KULLANICI ||--o{ RIZA : "verir"
+    KULLANICI ||--o{ KONUM_IZNI_OLAYI : "her açılışta"
+    KULLANICI ||--o{ KONUM_KAYDI : "ölçülür"
+    KULLANICI ||--|| SON_KONUM : "tetikleyiciyle"
+    KULLANICI ||--o{ AILE_UYE : "üyedir"
+    AILE ||--o{ AILE_UYE : "içerir"
+    AILE ||--o{ AILE_ISTEK : "kodla katılım"
+    KULLANICI ||--o{ AILE_ISTEK : "kod girer"
+    AILE }o--|| TOPLANMA_ALANI : "buluşma noktası"
+    AILE ||--o{ AILE_CANTA : "hazırlar"
+    CANTA_MADDESI ||--o{ AILE_CANTA : "madde"
+    KULLANICI ||--o{ DURUM_BILDIRIMI : "Güvendeyim"
+    KULLANICI ||--o{ MESAJ : "gönderir"
+    MESAJ ||--o{ MESAJ_TESLIM : "kanal ve sıçrama"
+    KULLANICI ||--o{ ILAN : "açar / üstlenir"
+    ILAN ||--o{ ILAN_HAREKET : "durum geçmişi"
+    ILAN ||--o{ ILAN_BILDIRIM : "bildir"
+    KULLANICI ||--o| DESTEK_IHTIYACI : "hassas, şifreli"
+
+    KULLANICI {
+        uuid id PK
+        citext kisisel_kod UK "HM-XXXX-XXXX"
+        text ad
+        text soyad
+        text telefon UK "+90XXXXXXXXXX"
+        int mahalle_id FK
+        enum dil "tr ar en"
+    }
+    KULLANICI_ADRES {
+        uuid kullanici_id PK
+        bytea acik_adres_sifreli
+        numeric yaklasik_enlem
+        numeric yaklasik_boylam
+    }
+    KONUM_KAYDI {
+        uuid olcum_kimligi UK
+        float enlem
+        float boylam
+        enum kaynak "gps ag manuel"
+        enum kanal "internet sms mesh"
+        timestamptz olcum_zamani
+    }
+    AILE {
+        uuid id PK
+        text ad
+        int bulusma_alani_id FK
+        text sehir_disi_kisi_tel
+    }
+    AILE_ISTEK {
+        uuid id PK
+        text yon "basvuru davet"
+        citext girilen_kod
+        enum durum
+        timestamptz son_gecerlilik
+    }
+    ILAN {
+        uuid id PK
+        enum tur
+        enum kategori
+        enum durum
+        bool dogrulanmis
+        numeric yaklasik_enlem
+    }

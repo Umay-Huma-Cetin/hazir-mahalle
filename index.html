@@ -1,0 +1,1256 @@
+<title>Hazır Mahalle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=Nunito:wght@700;800&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+/* Layout: the app comes first as a phone-width column; demo controls fold into a small panel under it. Emergency mode is a full-screen deep-blue layer with bright, colour-coded buttons. */
+:root {
+  --bg: #F2F7FA;
+  --surface: #FFFFFF;
+  --surface-2: #EAF3F7;
+  --ink: #15304A;
+  --muted: #4D6476;
+  --line: #D5E3EB;
+  --primary: #0A8576;
+  --primary-soft: #DCF3EE;
+  --primary-ink: #FFFFFF;
+  --signal: #FFB547;
+  --signal-ink: #3A2500;
+  --sun-soft: #FFF1DA;
+  --go: #12814A;
+  --go-soft: #DCF4E6;
+  --warn: #A85800;
+  --warn-soft: #FFEFD6;
+  --crit: #D63C3C;
+  --crit-soft: #FDE5E4;
+  --sky: #2F7FE6;
+  --rose-soft: #FCE8EF; --rose: #B8335E;
+  --blue-soft: #E3EEFF; --blue: #2D63C8;
+  --park: #BDE8C6;
+  --park-line: #43A866;
+  --street: #FFFFFF;
+  --block: #E3ECF1;
+  --font-display: "Nunito", "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-ar: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 16px;
+  --base: 15px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1C2A; --surface: #162737; --surface-2: #1C3245; --ink: #EAF2F8; --muted: #A6B9C8; --line: #29435A;
+    --primary: #3CC6B4; --primary-soft: #133A39; --primary-ink: #04201C; --signal: #FFC266; --signal-ink: #2E1D00; --sun-soft: #3A2D14;
+    --go: #4CD38A; --go-soft: #143A28; --warn: #FFB25C; --warn-soft: #3A2A12; --crit: #FF7A70; --crit-soft: #3E1D20; --sky: #6AA8FF;
+    --rose-soft: #3A1E2A; --rose: #FF8FB4; --blue-soft: #1B2F52; --blue: #8DB4FF;
+    --park: #1D4A33; --park-line: #4CAF6E; --street: #2A4256; --block: #1A2E40;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1C2A; --surface: #162737; --surface-2: #1C3245; --ink: #EAF2F8; --muted: #A6B9C8; --line: #29435A;
+  --primary: #3CC6B4; --primary-soft: #133A39; --primary-ink: #04201C; --signal: #FFC266; --signal-ink: #2E1D00; --sun-soft: #3A2D14;
+  --go: #4CD38A; --go-soft: #143A28; --warn: #FFB25C; --warn-soft: #3A2A12; --crit: #FF7A70; --crit-soft: #3E1D20; --sky: #6AA8FF;
+  --rose-soft: #3A1E2A; --rose: #FF8FB4; --blue-soft: #1B2F52; --blue: #8DB4FF;
+  --park: #1D4A33; --park-line: #4CAF6E; --street: #2A4256; --block: #1A2E40;
+  color-scheme: dark;
+}
+:root.big { --base: 18px; }
+html { font-size: var(--base); }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 1rem; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 32px;
+}
+:root[lang="ar"] body { font-family: var(--font-ar); }
+* { box-sizing: border-box; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+.wrap { max-width: 460px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
+/* demo panel */
+.proto { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.proto summary { list-style: none; cursor: pointer; padding: 12px 14px; display: flex; align-items: center; gap: 10px; min-height: 52px; font-weight: 600; font-size: .92rem; }
+.proto summary::-webkit-details-marker { display: none; }
+.proto summary .state { margin-inline-start: auto; color: var(--muted); font-weight: 400; font-size: .82rem; display: flex; align-items: center; gap: 6px; }
+.proto summary .chev { transition: transform .2s; color: var(--muted); }
+.proto[open] summary .chev { transform: rotate(180deg); }
+.demo-badge { background: var(--blue-soft); color: var(--blue); font-size: .72rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; letter-spacing: .04em; }
+.proto-body { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+.proto-body p { font-size: .82rem; color: var(--muted); }
+.proto-row { display: flex; flex-direction: column; gap: 6px; }
+.proto-row label { font-size: .82rem; font-weight: 600; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; background: var(--surface-2); border-radius: 12px; padding: 4px; }
+.seg button { flex: 1 1 auto; border: 0; background: transparent; border-radius: 9px; padding: 6px 10px; font-size: .85rem; min-height: 40px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(21,48,74,.15); }
+
+/* app frame */
+.app { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; min-height: 640px; box-shadow: 0 12px 32px -18px rgba(21,48,74,.35); }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px 12px; flex-wrap: wrap; background: linear-gradient(180deg, var(--primary-soft), var(--surface)); }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.mark { width: 38px; height: 38px; border-radius: 12px; background: var(--primary); display: grid; place-items: center; flex: none; }
+.mark svg { width: 22px; height: 22px; }
+.brand h1 { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; line-height: 1.05; margin: 0; }
+.brand small { display: block; color: var(--muted); font-size: .78rem; }
+.top-tools { display: flex; gap: 6px; align-items: center; }
+.lang { display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 3px; }
+.lang button { border: 0; background: transparent; min-width: 38px; min-height: 36px; border-radius: 8px; font-weight: 700; font-size: .85rem; color: var(--muted); }
+.lang button[aria-pressed="true"] { background: var(--primary); color: var(--primary-ink); }
+.chip-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 11px; min-width: 44px; min-height: 42px; font-weight: 800; font-size: .95rem; }
+.chip-btn[aria-pressed="true"] { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+
+.statusbar { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: .82rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.dot.internet { background: var(--go); } .dot.sms { background: var(--signal); } .dot.mesh { background: var(--sky); } .dot.none { background: var(--crit); }
+.statusbar .q { margin-inline-start: auto; color: var(--muted); }
+
+main { padding: 16px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+h2 { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; margin: 0; line-height: 1.15; text-wrap: balance; }
+h3 { font-size: 1rem; margin: 0; font-weight: 700; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.small { font-size: .85rem; }
+.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); }
+.card.tint { background: var(--surface-2); border-color: transparent; }
+.row { display: flex; gap: 12px; align-items: center; }
+.row > .grow { flex: 1; min-width: 0; }
+.eyebrow { font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+:root[lang="ar"] .eyebrow { letter-spacing: 0; }
+.hello h2 { font-size: 1.55rem; }
+
+/* score */
+.score { display: flex; gap: 16px; align-items: center; }
+.ring { width: 92px; height: 92px; flex: none; position: relative; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring .num { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-display); font-size: 1.9rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.track { stroke: var(--surface-2); } .fill { stroke: var(--primary); transition: stroke-dashoffset .4s ease; }
+.bar { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--primary); border-radius: 999px; transition: width .3s; }
+
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 14px; min-height: 48px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn.primary { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+.btn.signal { background: var(--signal); color: var(--signal-ink); border-color: var(--signal); }
+.btn.block { width: 100%; }
+.btn.sm { min-height: 40px; padding: 6px 12px; font-size: .88rem; }
+.alarm { background: var(--crit); color: #fff; border: 0; border-radius: 18px; padding: 14px 16px; min-height: 72px; width: 100%; display: flex; align-items: center; gap: 14px; text-align: start; box-shadow: 0 10px 22px -12px var(--crit); }
+.alarm .ic { width: 46px; height: 46px; border-radius: 14px; background: rgba(255,255,255,.18); display: grid; place-items: center; flex: none; }
+.alarm b { display: block; font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; }
+.alarm span { font-size: .82rem; opacity: .92; }
+:root[lang="ar"] .alarm b, :root[lang="ar"] h2, :root[lang="ar"] .brand h1 { font-family: var(--font-ar); }
+
+/* quick tiles */
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { border: 0; border-radius: var(--radius); padding: 14px; min-height: 104px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 8px; text-align: start; }
+.tile .ti { width: 38px; height: 38px; border-radius: 12px; background: var(--surface); display: grid; place-items: center; }
+.tile .ti svg { width: 22px; height: 22px; }
+.tile b { font-size: 1rem; }
+.tile small { display: block; font-size: .8rem; color: var(--muted); }
+.tile.kit { background: var(--sun-soft); } .tile.kit .ti { color: var(--warn); }
+.tile.fam { background: var(--rose-soft); } .tile.fam .ti { color: var(--rose); }
+.tile.map { background: var(--primary-soft); } .tile.map .ti { color: var(--primary); }
+.tile.board { background: var(--blue-soft); } .tile.board .ti { color: var(--blue); }
+
+/* tabs */
+nav.tabs { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--line); background: var(--surface); padding: 6px 4px 8px; }
+nav.tabs button { border: 0; background: transparent; padding: 4px 2px; min-height: 58px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: .74rem; color: var(--muted); }
+nav.tabs button .pill { width: 54px; height: 30px; border-radius: 999px; display: grid; place-items: center; transition: background .2s; }
+nav.tabs button svg { width: 22px; height: 22px; }
+nav.tabs button[aria-current="page"] { color: var(--ink); font-weight: 700; }
+nav.tabs button[aria-current="page"] .pill { background: var(--primary-soft); color: var(--primary); }
+
+/* checklist */
+.check { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); }
+.list { display: flex; flex-direction: column; gap: 6px; }
+.check input { width: 26px; height: 26px; accent-color: var(--primary); flex: none; margin: 0; }
+.check label { flex: 1; min-width: 0; cursor: pointer; padding-block: 4px; }
+.check.done { background: var(--go-soft); }
+.check.done label { color: var(--muted); }
+.tag { display: inline-flex; align-items: center; gap: 4px; font-size: .74rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); white-space: nowrap; }
+.tag.go { background: var(--go-soft); color: var(--go); }
+.tag.warn { background: var(--warn-soft); color: var(--warn); }
+.tag.crit { background: var(--crit-soft); color: var(--crit); }
+.tag.sig { background: var(--sun-soft); color: var(--warn); }
+
+/* board */
+.filters { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.filters button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; min-height: 40px; white-space: nowrap; font-size: .85rem; font-weight: 600; }
+.filters button[aria-pressed="true"] { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+.post { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.post.verified { border-color: transparent; background: var(--go-soft); }
+.post.stale { background: var(--surface-2); }
+.post-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.post-head .when { margin-inline-start: auto; font-size: .78rem; color: var(--muted); }
+.cat-ico { width: 38px; height: 38px; border-radius: 12px; background: var(--blue-soft); color: var(--blue); display: grid; place-items: center; flex: none; }
+.cat-ico svg { width: 20px; height: 20px; }
+.steps { display: flex; gap: 4px; font-size: .74rem; }
+.steps span { flex: 1; text-align: center; padding: 4px 0; border-radius: 8px; background: var(--surface-2); color: var(--muted); }
+.steps span.on { background: var(--primary); color: var(--primary-ink); font-weight: 700; }
+
+/* map */
+.mapbox { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--block); }
+.mapbox svg { display: block; width: 100%; height: auto; }
+.m-street { stroke: var(--street); }
+.m-block { fill: var(--block); }
+.m-park { fill: var(--park); stroke: var(--park-line); stroke-width: 1.5; }
+.m-park.near { stroke: var(--primary); stroke-width: 3; }
+.m-label { fill: var(--ink); font-size: 10px; font-weight: 700; font-family: var(--font-body); }
+.m-you { fill: var(--sky); stroke: #fff; stroke-width: 3; }
+.m-route { stroke: var(--primary); stroke-width: 2.5; stroke-dasharray: 6 4; fill: none; }
+.m-compass { fill: var(--surface); }
+.afet .m-compass { fill: #1A3A66; }
+.m-meet { fill: var(--signal); stroke: var(--ink); stroke-width: 1.5; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: .8rem; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-inline-end: 4px; }
+.compass { width: 56px; height: 56px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; flex: none; }
+.compass svg { width: 28px; height: 28px; transition: transform .3s; }
+.big-num { font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; line-height: 1; font-variant-numeric: tabular-nums; }
+
+/* family */
+.person { display: flex; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.person:last-child { border-bottom: 0; }
+.avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--rose-soft); color: var(--rose); display: grid; place-items: center; font-weight: 800; flex: none; }
+.idcard { border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 6px; background: var(--signal); color: var(--signal-ink); }
+.idcard .big { font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; line-height: 1.05; }
+:root[lang="ar"] .idcard .big { font-family: var(--font-ar); }
+.idcard .phone { font-family: var(--font-mono); font-size: 1.05rem; user-select: all; }
+select.full, input.full, textarea.full { width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px; min-height: 48px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > span { font-size: .85rem; font-weight: 700; }
+
+/* emergency layer — deep blue for night use, bright colour-coded actions */
+.afet {
+  position: fixed; inset: 0; z-index: 50; background: #12305A; color: #F4F8FC; overflow-y: auto;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  --a-line: #2E5689; --a-muted: #C3D4E8; --a-card: #1B3F70;
+}
+.afet-in { max-width: 460px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.afet .conn { display: flex; gap: 8px; align-items: center; padding: 8px 8px 8px 12px; border-radius: 14px; background: var(--a-card); font-weight: 700; flex-wrap: wrap; }
+.afet .conn small { color: var(--a-muted); font-weight: 400; }
+.afet .conn .cyc { margin-inline-start: auto; border: 1px dashed #8FB2DD; background: transparent; color: #DCE8F6; border-radius: 10px; min-height: 38px; padding: 4px 10px; font-size: .78rem; font-weight: 600; }
+.afet .phase { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--a-card); padding: 4px; border-radius: 12px; }
+.afet .phase button { border: 0; background: transparent; color: #DCE8F6; border-radius: 9px; padding: 6px 2px; min-height: 44px; font-size: .8rem; }
+.afet .phase button[aria-pressed="true"] { background: #FFC145; color: #2E1D00; font-weight: 800; }
+.afet .tip { background: #F4F8FC; color: #12305A; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 1.05rem; }
+.afet .tip .eyebrow { color: #0A8576; }
+.afet .tip .muted { color: #4D6476; }
+.afet .tip .btn { background: #EAF3F7; color: #12305A; border-color: transparent; }
+.afet .grid4 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bigbtn { border: 0; border-radius: 20px; min-height: 124px; padding: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 1.2rem; font-weight: 800; text-align: center; box-shadow: 0 8px 18px -10px rgba(0,0,0,.5); }
+.bigbtn svg { width: 40px; height: 40px; }
+.b-safe { background: #34C77B; color: #06281A; }
+.b-help { background: #FFC145; color: #2E1D00; }
+.b-area { background: #FFFFFF; color: #12305A; }
+.b-sos { background: #FF5A5F; color: #FFFFFF; }
+.afet .tools { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.afet .tools button { border: 0; background: var(--a-card); color: #F4F8FC; border-radius: 14px; min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: .85rem; font-weight: 700; }
+.afet .tools button[aria-pressed="true"] { background: #FFC145; color: #2E1D00; }
+.afet .tools svg { width: 24px; height: 24px; }
+.outbox { display: flex; flex-direction: column; gap: 6px; }
+.msg { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--a-card); font-size: .92rem; }
+.msg .st { margin-inline-start: auto; font-size: .76rem; font-weight: 700; white-space: nowrap; padding: 3px 8px; border-radius: 999px; }
+.st.ok { background: #1E6B48; color: #D8FBE8; } .st.wait { background: #6B4B10; color: #FFE7B3; } .st.go { background: #2E5689; color: #DCE8F6; }
+.sheet { background: var(--a-card); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.sheet .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sheet .opts button { min-height: 68px; border-radius: 14px; border: 0; background: #F4F8FC; color: #12305A; font-weight: 700; font-size: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.sheet .opts button.trap { grid-column: 1 / -1; background: #FF5A5F; color: #FFFFFF; }
+.sheet .opts svg { width: 24px; height: 24px; }
+.sheet input, .sheet select { background: #F4F8FC; border: 0; color: #12305A; border-radius: 12px; padding: 10px; min-height: 48px; width: 100%; }
+.afet .btn { background: #2B5489; color: #F4F8FC; border-color: transparent; }
+.afet .btn.signal { background: #FFC145; color: #2E1D00; }
+.afet .filters button { background: #F4F8FC; color: #12305A; border-color: transparent; }
+.afet .filters button[aria-pressed="true"] { background: #FFC145; color: #2E1D00; }
+.num112 { font-family: var(--font-display); font-size: 4rem; font-weight: 800; line-height: 1; letter-spacing: .04em; user-select: all; color: #FFFFFF; }
+.afet .mapbox { background: #1A3A66; border-color: var(--a-line); }
+.afet .m-block { fill: #1A3A66; } .afet .m-street { stroke: #2E5689; } .afet .m-park { fill: #1F5C45; stroke: #4CD38A; } .afet .m-label { fill: #F4F8FC; } .afet .m-route { stroke: #FFC145; } .afet .m-park.near { stroke: #FFC145; }
+.afet .muted { color: var(--a-muted); }
+.afet .tag { background: #2B5489; color: #F4F8FC; }
+.afet .tag.warn { background: #6B4B10; color: #FFE7B3; }
+.afet .seg { background: var(--a-card); } .afet .seg button { color: #DCE8F6; } .afet .seg button[aria-pressed="true"] { background: #F4F8FC; color: #12305A; }
+.afet .legend { color: var(--a-muted); }
+
+.torch { position: fixed; inset: 0; z-index: 80; background: #FFFFFF; color: #000; display: grid; place-items: center; text-align: center; font-weight: 700; border: 0; width: 100%; font-size: 1.1rem; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 90; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 10px 12px 10px 16px; display: flex; gap: 12px; align-items: center; max-width: min(440px, calc(100% - 32px)); box-shadow: 0 8px 28px rgba(0,0,0,.25); font-size: .92rem; }
+.afet-on .toast { background: #F4F8FC; color: #12305A; }
+.toast button { border: 0; background: var(--signal); color: var(--signal-ink); border-radius: 10px; padding: 8px 12px; font-weight: 800; min-height: 40px; white-space: nowrap; flex: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.foot { font-size: .78rem; color: var(--muted); text-align: center; text-wrap: balance; }
+/* forms, gate, codes */
+.mono { font-family: var(--font-mono); letter-spacing: .02em; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 380px) { .two { grid-template-columns: 1fr; } }
+.field label span { font-size: .85rem; font-weight: 700; }
+.field small { line-height: 1.35; }
+.full.bad, .codein.bad { border-color: var(--crit); box-shadow: 0 0 0 1px var(--crit) inset; }
+.ferr { color: var(--crit); font-size: .82rem; font-weight: 600; }
+.alertbox { background: var(--crit-soft); color: var(--ink); border-radius: 12px; padding: 10px 12px; font-size: .9rem; }
+.telrow { display: flex; align-items: stretch; }
+.telrow .pre { display: grid; place-items: center; padding: 0 10px; background: var(--surface-2); border: 1px solid var(--line); border-inline-end: 0; border-radius: 12px 0 0 12px; font-weight: 700; color: var(--muted); }
+.telrow input { border-radius: 0 12px 12px 0; min-width: 0; }
+textarea.full { resize: vertical; font: inherit; }
+.kvkk { display: flex; gap: 10px; align-items: flex-start; font-size: .88rem; background: var(--surface-2); border-radius: 12px; padding: 10px 12px; cursor: pointer; }
+.kvkk input { width: 24px; height: 24px; accent-color: var(--primary); flex: none; margin: 0; }
+.kvkk.bad { box-shadow: 0 0 0 2px var(--crit) inset; }
+.gate { display: flex; flex-direction: column; gap: 14px; padding-block: 8px 4px; }
+.gate-ico { width: 72px; height: 72px; border-radius: 22px; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; }
+.gate-ico svg { width: 38px; height: 38px; }
+.gate-ico.no { background: var(--warn-soft); color: var(--warn); }
+.uses { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.uses li { display: flex; gap: 10px; align-items: flex-start; }
+.uses li svg { color: var(--primary); flex: none; margin-top: 3px; }
+.sos112 { border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.btn.sosbtn { background: var(--crit-soft); color: var(--crit); border-color: transparent; text-decoration: none; }
+.btn.danger { background: var(--crit); color: #fff; border-color: var(--crit); }
+.scrim { position: fixed; inset: 0; z-index: 70; background: rgba(10, 24, 38, .45); display: grid; place-items: center; padding: max(16px, env(safe-area-inset-left, 0px)); }
+.osdlg { background: var(--surface); color: var(--ink); width: min(320px, 100%); border-radius: 22px; padding: 18px 16px 10px; display: flex; flex-direction: column; gap: 8px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.3); }
+.os-ico { width: 44px; height: 44px; margin: 0 auto; border-radius: 12px; background: var(--primary); color: #fff; display: grid; place-items: center; }
+.os-ico svg { width: 24px; height: 24px; }
+.os-map { height: 90px; border-radius: 12px; background: linear-gradient(135deg, var(--park) 0 30%, var(--block) 30% 62%, var(--park) 62%); position: relative; }
+.os-map span { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px; border-radius: 50%; background: var(--sky); border: 3px solid #fff; box-shadow: 0 0 0 10px rgba(47,127,230,.2); }
+.osdlg button { border: 0; background: transparent; color: var(--sky); font-weight: 700; min-height: 46px; border-top: 1px solid var(--line); font-size: .98rem; }
+.bigcode { font-family: var(--font-mono); font-size: 1.55rem; font-weight: 500; letter-spacing: .06em; user-select: all; color: var(--primary); }
+.codecard { background: var(--primary-soft); border-color: transparent; }
+.codein { text-transform: uppercase; letter-spacing: .08em; flex: 1; min-width: 0; }
+.avatar.me { background: var(--primary-soft); color: var(--primary); }
+.avatar.dim { opacity: .55; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; font-size: .9rem; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.locmini { display: inline-flex; align-items: center; gap: 4px; margin-inline-start: 6px; padding: 2px 8px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); font-weight: 700; font-size: .76rem; }
+.pstat { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+.locico { background: var(--primary-soft); color: var(--primary); }
+.loccard { gap: 8px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@keyframes pulse { 0% { r: 7; opacity: .6 } 100% { r: 22; opacity: 0 } }
+.m-pulse { fill: var(--sky); animation: pulse 1.8s ease-out infinite; }
+</style>
+
+<div class="wrap" id="root"></div>
+<div id="layer"></div>
+<div class="sr" aria-live="polite" id="live"></div>
+
+<script>
+(function () {
+'use strict';
+
+/* ---------- storage (optional) ---------- */
+function load(k, d) { try { var v = localStorage.getItem('hm_' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function save(k, v) { try { localStorage.setItem('hm_' + k, JSON.stringify(v)); } catch (e) {} }
+
+/* ---------- strings ---------- */
+var S = {
+tr: {
+  sub: 'Afet hazırlık ve dayanışma', proto: 'Prototip kontrolleri — gerçek uygulamada otomatik', conn: 'Bağlantı', region: 'Bölge',
+  internet: 'İnternet', sms: 'Yalnız SMS', mesh: 'Yakın telefonlar', none: 'Bağlantı yok',
+  ist: 'İstanbul', mal: 'Malatya', big: 'Büyük yazı',
+  tHome: 'Ana sayfa', tKit: 'Çanta', tFam: 'Aile', tMap: 'Harita', tBoard: 'Pano',
+  queued: '{n} mesaj telefonda bekliyor', allSent: 'Bekleyen mesaj yok',
+  score: 'Hazırlık skoru', next: 'Sıradaki adım', allDone: 'Tüm adımlar tamam. 6 ayda bir su ve ilaç tarihlerini kontrol et.',
+  openAfet: 'Afet modunu aç', openHint: 'Gerçek uygulamada kilit ekranından tek dokunuşla açılır. Prototipte denemek için dokun.',
+  istFault: 'Kuzey Anadolu Fayı', istNote: 'Beklenen büyük depreme hazırlık. Kalabalık ve dar toplanma alanları için alternatif alan planla.',
+  malFault: 'Doğu Anadolu Fayı', malNote: 'Artçılar sürebilir. Kış koşulları ve hasar tespiti yapılmamış binalara girmeme öncelikli.',
+  kitTitle: 'Deprem çantası', kitSub: 'İşaretledikçe skorun artar. Liste internetsiz açılır.', regional: 'Bölgene özel',
+  famTitle: 'Aile planı', meet: 'Aile buluşma noktası', meetIst: 'Ayrı yakalarda kalırsanız köprüyü geçmeye çalışmayın. Her yaka için ayrı buluşma noktası belirleyin.',
+  meetMal: 'Aynı bölgedeki herkes etkilenebilir. Şehir dışındaki bir yakını ortak iletişim kişisi yapın.',
+  contacts: 'Acil durum kişileri', safeAt: 'Güvende · {t}', noNews: 'Haber yok', outTown: 'şehir dışı iletişim kişisi',
+  whoami: '“Ben kimim” kartı', whoHint: 'Çocuğun telefonunun kilit ekranında görünür. Yalnızca gerekli bilgi yer alır.',
+  wName: 'Adım', wParent: 'Velim', wMeet: 'Buluşma noktamız',
+  mapTitle: 'Toplanma alanları', mapData: 'Harita telefonda kayıtlı · son güncelleme 28 Ekim 2026 · örnek veri',
+  nearest: 'En yakın alan', walk: 'yürüyerek yaklaşık {n} dk', dir: 'Yön', offline: 'İnternetsiz çalışır',
+  small: 'Bu alan çevre nüfusuna göre küçük, kalabalık olabilir. Alternatif: {alt}', legArea: 'Toplanma alanı', legMeet: 'Aile buluşma noktası', legYou: 'Konumun (GPS)',
+  listView: 'Liste', mapView: 'Harita', m: 'm',
+  boardTitle: 'Mahalle panosu', boardSub: 'İhtiyaçlar ve yardım teklifleri. Tam adres gösterilmez.', all: 'Tümü', addNeed: 'İhtiyaç ekle',
+  open: 'Açık', claimed: 'Üstlenildi', done: 'Karşılandı', claim: 'Ben karşılarım', deliver: 'Teslim ettim', stale: 'Hâlâ geçerli mi? 12 saattir güncellenmedi.',
+  verified: 'Doğrulanmış duyuru', mine: 'Senin ilanın', maxClaims: 'Aynı anda en fazla 3 ilan üstlenebilirsin. Önce birini teslim et.',
+  hAgo: '{n} sa önce', mAgo: '{n} dk önce', pcs: '{n} adet', ppl: '{n} kişilik',
+  syncQ: 'Telefonda bekliyor', syncMesh: 'Yakın telefonlara yayıldı', syncOk: 'Panoda',
+  water: 'Su', blanket: 'Battaniye', medicine: 'İlaç', baby: 'Bebek maması', food: 'Gıda', shelter: 'Barınma',
+  safe: 'Güvendeyim', help: 'Yardım lazım', area: 'Toplanma alanım', sos: 'Acil: 112',
+  whistle: 'Düdük', torch: 'Fener', exit: 'Çık', exitFull: 'Afet modundan çık',
+  since: 'Sarsıntıdan bu yana', p0: 'İlk 10 dk', p1: 'İlk saat', p2: 'İlk 24 saat', p3: '24–72 saat',
+  tip0: 'Sarsıntı durduysa merdivenle çık, asansör kullanma. Dışarıda binalardan, duvarlardan ve elektrik hatlarından uzak dur.',
+  tip1: 'Toplanma alanına yürü. Ailenle buluşma noktasında buluş; ayrı düştüysen Güvendeyim mesajı gönder.',
+  tip2: 'İhtiyacını panoya yaz, fazlan varsa paylaş. Pilini koru: afet modu ekranı karartır ve arka plan işlerini durdurur.',
+  tip3: 'Hasar tespiti yapılmadan binaya girme. Yalnızca doğrulanmış rozetli duyurulara güven.',
+  tipMal: 'Çadırda veya konteynerde soba kullanıyorsan havalandır. Karbonmonoksit kokusuzdur.',
+  tipIst: 'Kıyıdaysan sarsıntıdan sonra yüksek bir yere çık.',
+  read: 'Sesli oku', outbox: 'Gönderilenler',
+  sending: 'Gönderiliyor…', undoWin: 'Geri alınabilir', viaNet: 'İletildi · internet', viaSms: 'İletildi · SMS', viaMesh: 'İletildi · {n} telefon', waiting: 'Bekliyor',
+  safeMsg: 'Güvendeyim, buluşma noktasına gidiyorum.', safeToast: 'Güvendeyim mesajı aile grubuna gidiyor.', undo: 'Geri al', undone: 'Mesaj iptal edildi.',
+  helpQ: 'Neye ihtiyacın var?', trapped: 'Mahsur kaldım', trappedTitle: 'Mahsur kalma bildirimi resmî kanaldan yapılır',
+  trappedBody: '112’yi ara ya da AFAD Acil / HAYAT 112 uygulamasını kullan. Arayamıyorsan düdüğü çal ve enerjini koru. Bu uygulama acil çağrının yerine geçmez.',
+  qty: 'Adet veya kişi sayısı', note: 'Kısa not (isteğe bağlı)', notePh: 'Örn. 2 çocuk, biri bebek', postNeed: 'Panoya ekle', cancel: 'Vazgeç',
+  postedOk: 'İhtiyacın panoya eklendi.', postedMesh: 'İlan {n} yakın telefona yayıldı.', postedQ: 'İlan telefonda bekliyor; bağlantı gelince gidecek.',
+  sosTitle: 'Acil çağrı', sosBody: 'Telefonundan bu numarayı ara. Gerçek uygulamada AFAD Acil ve HAYAT 112 uygulamalarına tek dokunuşla geçilir.',
+  call: 'Aramayı dene', back: 'Geri', torchOff: 'Kapatmak için dokun',
+  flushed: 'Bağlantı geldi: bekleyen {n} öğe gönderildi.', meshN: '{n} yakın telefon bulundu', meshZero: 'Yakında uygulamayı kullanan telefon yok',
+  example: 'Örnek veri', foot: 'Hazır Mahalle tıklanabilir prototip · Umay Hüma Çetin · Örnek veriler gerçek toplanma alanı değildir. Acil durumda 112’yi arayın.',
+  hello: 'Merhaba', homeLead: 'Bugün hazırlığına 5 dakika ayır.', demo: 'Demo ayarları', demoNote: 'Gerçek uygulamada bağlantı ve konum otomatik algılanır. Burada farklı durumları deneyebilirsin.', tileKit: '{a}/{b} madde hazır', tileMeet: 'Buluşma: {m}', tileMap: 'En yakın alan {n} m', tileBoard: '{n} açık ihtiyaç', cycle: 'Bağlantıyı değiştir (demo)', kitProg: '{a}/{b} madde hazır', afetSub: 'Güvendeyim, yardım, toplanma alanı ve 112 tek ekranda',
+  next1: 'Sıradaki: ', dirs: ['Kuzey','Kuzeydoğu','Doğu','Güneydoğu','Güney','Güneybatı','Batı','Kuzeybatı']
+},
+en: {
+  sub: 'Disaster preparedness and mutual aid', proto: 'Prototype controls — automatic in the real app', conn: 'Signal', region: 'Region',
+  internet: 'Internet', sms: 'SMS only', mesh: 'Nearby phones', none: 'No signal',
+  ist: 'Istanbul', mal: 'Malatya', big: 'Large text',
+  tHome: 'Home', tKit: 'Kit', tFam: 'Family', tMap: 'Map', tBoard: 'Board',
+  queued: '{n} message(s) waiting on phone', allSent: 'Nothing waiting to send',
+  score: 'Preparedness score', next: 'Next step', allDone: 'All steps done. Check water and medicine dates every 6 months.',
+  openAfet: 'Open emergency mode', openHint: 'In the real app it opens from the lock screen with one tap. Tap to try it in the prototype.',
+  istFault: 'North Anatolian Fault', istNote: 'Preparing for the expected major earthquake. Plan an alternative area in case yours is crowded.',
+  malFault: 'East Anatolian Fault', malNote: 'Aftershocks may continue. Winter conditions and staying out of uninspected buildings come first.',
+  kitTitle: 'Emergency kit', kitSub: 'Your score rises as you tick items. The list works offline.', regional: 'For your region',
+  famTitle: 'Family plan', meet: 'Family meeting point', meetIst: 'If you end up on different sides of the city, do not try to cross the bridges. Set a meeting point for each side.',
+  meetMal: 'Everyone in the region may be affected. Make a relative outside the city your shared contact.',
+  contacts: 'Emergency contacts', safeAt: 'Safe · {t}', noNews: 'No news yet', outTown: 'out-of-town contact',
+  whoami: '“Who I am” card', whoHint: 'Shown on your child’s lock screen. Only the information that is needed.',
+  wName: 'My name', wParent: 'My parent', wMeet: 'Our meeting point',
+  mapTitle: 'Assembly areas', mapData: 'Map stored on phone · last updated 28 Oct 2026 · sample data',
+  nearest: 'Nearest area', walk: 'about {n} min on foot', dir: 'Direction', offline: 'Works offline',
+  small: 'This area is small for the local population and may be crowded. Alternative: {alt}', legArea: 'Assembly area', legMeet: 'Family meeting point', legYou: 'You (GPS)',
+  listView: 'List', mapView: 'Map', m: 'm',
+  boardTitle: 'Neighbourhood board', boardSub: 'Needs and offers of help. Exact addresses are never shown.', all: 'All', addNeed: 'Add a need',
+  open: 'Open', claimed: 'Taken', done: 'Met', claim: 'I’ll cover this', deliver: 'I delivered it', stale: 'Still needed? Not updated for 12 hours.',
+  verified: 'Verified notice', mine: 'Your post', maxClaims: 'You can take at most 3 posts at once. Deliver one first.',
+  hAgo: '{n} h ago', mAgo: '{n} min ago', pcs: '{n} pcs', ppl: 'for {n} people',
+  syncQ: 'Waiting on phone', syncMesh: 'Shared to nearby phones', syncOk: 'On the board',
+  water: 'Water', blanket: 'Blankets', medicine: 'Medicine', baby: 'Baby formula', food: 'Food', shelter: 'Shelter',
+  safe: 'I’m safe', help: 'I need help', area: 'My assembly area', sos: 'Emergency: 112',
+  whistle: 'Whistle', torch: 'Torch', exit: 'Exit', exitFull: 'Exit emergency mode',
+  since: 'Since the shaking', p0: 'First 10 min', p1: 'First hour', p2: 'First 24 h', p3: '24–72 h',
+  tip0: 'If the shaking has stopped, take the stairs, not the lift. Outside, keep away from buildings, walls and power lines.',
+  tip1: 'Walk to your assembly area. Meet your family at the meeting point; if you got separated, send “I’m safe”.',
+  tip2: 'Post what you need on the board and share what you can spare. Save battery: emergency mode dims the screen and stops background work.',
+  tip3: 'Do not enter a building before it has been inspected for damage. Trust only notices with the verified badge.',
+  tipMal: 'If you use a stove in a tent or container, keep it ventilated. Carbon monoxide has no smell.',
+  tipIst: 'If you are near the coast, move to higher ground after the shaking.',
+  read: 'Read aloud', outbox: 'Sent',
+  sending: 'Sending…', undoWin: 'Can be undone', viaNet: 'Delivered · internet', viaSms: 'Delivered · SMS', viaMesh: 'Delivered · {n} phones', waiting: 'Waiting',
+  safeMsg: 'I’m safe, heading to the meeting point.', safeToast: '“I’m safe” is going to your family group.', undo: 'Undo', undone: 'Message cancelled.',
+  helpQ: 'What do you need?', trapped: 'I’m trapped', trappedTitle: 'Report being trapped through the official channel',
+  trappedBody: 'Call 112 or use the AFAD Acil / HAYAT 112 app. If you cannot call, use the whistle and save your energy. This app does not replace emergency calls.',
+  qty: 'Quantity or number of people', note: 'Short note (optional)', notePh: 'e.g. 2 children, one is a baby', postNeed: 'Post to board', cancel: 'Cancel',
+  postedOk: 'Your need is on the board.', postedMesh: 'Post shared to {n} nearby phones.', postedQ: 'Post is waiting on your phone and will send when there is signal.',
+  sosTitle: 'Emergency call', sosBody: 'Call this number from your phone. In the real app one tap opens AFAD Acil and HAYAT 112.',
+  call: 'Try calling', back: 'Back', torchOff: 'Tap to turn off',
+  flushed: 'Signal is back: {n} waiting item(s) sent.', meshN: '{n} nearby phones found', meshZero: 'No phones with the app nearby',
+  example: 'Sample data', foot: 'Hazır Mahalle clickable prototype · Umay Hüma Çetin · Sample data, not real assembly areas. In an emergency call 112.',
+  hello: 'Hello', homeLead: 'Spend 5 minutes on your preparedness today.', demo: 'Demo settings', demoNote: 'In the real app signal and location are detected automatically. Here you can try different situations.', tileKit: '{a}/{b} items ready', tileMeet: 'Meet at: {m}', tileMap: 'Nearest area {n} m', tileBoard: '{n} open needs', cycle: 'Change signal (demo)', kitProg: '{a}/{b} items ready', afetSub: 'I’m safe, help, assembly area and 112 on one screen',
+  next1: 'Next: ', dirs: ['North','Northeast','East','Southeast','South','Southwest','West','Northwest']
+},
+ar: {
+  sub: 'الاستعداد للكوارث والتضامن', proto: 'عناصر تحكم النموذج — تلقائية في التطبيق الحقيقي', conn: 'الاتصال', region: 'المنطقة',
+  internet: 'إنترنت', sms: 'رسائل SMS فقط', mesh: 'هواتف قريبة', none: 'لا اتصال',
+  ist: 'إسطنبول', mal: 'ملاطية', big: 'خط كبير',
+  tHome: 'الرئيسية', tKit: 'الحقيبة', tFam: 'العائلة', tMap: 'الخريطة', tBoard: 'اللوحة',
+  queued: '{n} رسالة في انتظار الإرسال', allSent: 'لا توجد رسائل في الانتظار',
+  score: 'درجة الاستعداد', next: 'الخطوة التالية', allDone: 'اكتملت كل الخطوات. راجع تواريخ الماء والأدوية كل 6 أشهر.',
+  openAfet: 'افتح وضع الطوارئ', openHint: 'في التطبيق الحقيقي يُفتح من شاشة القفل بلمسة واحدة. المس للتجربة.',
+  istFault: 'صدع شمال الأناضول', istNote: 'استعداد للزلزال الكبير المتوقع. خطط لمنطقة بديلة إذا كانت منطقتك مزدحمة.',
+  malFault: 'صدع شرق الأناضول', malNote: 'قد تستمر الهزات الارتدادية. الأولوية لظروف الشتاء وعدم دخول المباني غير المفحوصة.',
+  kitTitle: 'حقيبة الطوارئ', kitSub: 'ترتفع درجتك كلما أشرت إلى عنصر. القائمة تعمل دون إنترنت.', regional: 'خاص بمنطقتك',
+  famTitle: 'خطة العائلة', meet: 'نقطة لقاء العائلة', meetIst: 'إذا كنتم على ضفتين مختلفتين فلا تحاولوا عبور الجسور. حددوا نقطة لقاء لكل ضفة.',
+  meetMal: 'قد يتأثر كل من في المنطقة. اجعلوا قريبًا خارج المدينة جهة الاتصال المشتركة.',
+  contacts: 'جهات الاتصال للطوارئ', safeAt: 'بأمان · {t}', noNews: 'لا أخبار بعد', outTown: 'جهة اتصال خارج المدينة',
+  whoami: 'بطاقة «من أنا»', whoHint: 'تظهر على شاشة قفل هاتف طفلك. تحتوي فقط على المعلومات الضرورية.',
+  wName: 'اسمي', wParent: 'وليّ أمري', wMeet: 'نقطة لقائنا',
+  mapTitle: 'مناطق التجمع', mapData: 'الخريطة محفوظة على الهاتف · آخر تحديث 28 أكتوبر 2026 · بيانات تجريبية',
+  nearest: 'أقرب منطقة', walk: 'حوالي {n} دقيقة سيرًا', dir: 'الاتجاه', offline: 'تعمل دون إنترنت',
+  small: 'هذه المنطقة صغيرة بالنسبة لعدد السكان وقد تكون مزدحمة. البديل: {alt}', legArea: 'منطقة تجمع', legMeet: 'نقطة لقاء العائلة', legYou: 'موقعك (GPS)',
+  listView: 'قائمة', mapView: 'خريطة', m: 'م',
+  boardTitle: 'لوحة الحي', boardSub: 'الاحتياجات وعروض المساعدة. لا يظهر العنوان الكامل أبدًا.', all: 'الكل', addNeed: 'أضف حاجة',
+  open: 'مفتوح', claimed: 'قيد التنفيذ', done: 'تمت التلبية', claim: 'سأتكفل بها', deliver: 'سلّمتها', stale: 'هل ما زالت مطلوبة؟ لم تُحدَّث منذ 12 ساعة.',
+  verified: 'إعلان موثّق', mine: 'منشورك', maxClaims: 'يمكنك التكفل بثلاثة منشورات كحد أقصى. سلّم واحدًا أولًا.',
+  hAgo: 'قبل {n} ساعة', mAgo: 'قبل {n} دقيقة', pcs: '{n} قطعة', ppl: 'لـ {n} أشخاص',
+  syncQ: 'في انتظار الإرسال', syncMesh: 'نُشر إلى الهواتف القريبة', syncOk: 'على اللوحة',
+  water: 'ماء', blanket: 'بطانيات', medicine: 'دواء', baby: 'حليب أطفال', food: 'طعام', shelter: 'مأوى',
+  safe: 'أنا بأمان', help: 'أحتاج مساعدة', area: 'منطقة تجمعي', sos: 'طوارئ: 112',
+  whistle: 'صافرة', torch: 'مصباح', exit: 'خروج', exitFull: 'الخروج من وضع الطوارئ',
+  since: 'منذ الهزة', p0: 'أول 10 دقائق', p1: 'الساعة الأولى', p2: 'أول 24 ساعة', p3: '24–72 ساعة',
+  tip0: 'إذا توقفت الهزة فانزل بالدرج ولا تستخدم المصعد. في الخارج ابتعد عن المباني والجدران وخطوط الكهرباء.',
+  tip1: 'امشِ إلى منطقة التجمع. التقِ بعائلتك في نقطة اللقاء، وإذا افترقتم أرسل «أنا بأمان».',
+  tip2: 'اكتب حاجتك على اللوحة وشارك ما يزيد عنك. وفّر البطارية: وضع الطوارئ يخفض الإضاءة ويوقف العمليات الخلفية.',
+  tip3: 'لا تدخل أي مبنى قبل فحص أضراره. ثق فقط بالإعلانات التي تحمل شارة التوثيق.',
+  tipMal: 'إذا كنت تستخدم مدفأة في خيمة أو حاوية فاحرص على التهوية. أول أكسيد الكربون بلا رائحة.',
+  tipIst: 'إذا كنت قرب الساحل فاصعد إلى مكان مرتفع بعد الهزة.',
+  read: 'اقرأ بصوت عالٍ', outbox: 'المُرسَلة',
+  sending: 'جارٍ الإرسال…', undoWin: 'يمكن التراجع', viaNet: 'تم التسليم · إنترنت', viaSms: 'تم التسليم · SMS', viaMesh: 'تم التسليم · {n} هواتف', waiting: 'في الانتظار',
+  safeMsg: 'أنا بأمان، متجه إلى نقطة اللقاء.', safeToast: 'رسالة «أنا بأمان» في طريقها إلى مجموعة العائلة.', undo: 'تراجع', undone: 'أُلغيت الرسالة.',
+  helpQ: 'ماذا تحتاج؟', trapped: 'أنا محاصر', trappedTitle: 'يتم الإبلاغ عن الحصار عبر القناة الرسمية',
+  trappedBody: 'اتصل بالرقم 112 أو استخدم تطبيق AFAD Acil أو HAYAT 112. إذا لم تستطع الاتصال فاستخدم الصافرة ووفّر طاقتك. هذا التطبيق لا يحل محل مكالمة الطوارئ.',
+  qty: 'العدد أو عدد الأشخاص', note: 'ملاحظة قصيرة (اختياري)', notePh: 'مثلًا: طفلان أحدهما رضيع', postNeed: 'أضف إلى اللوحة', cancel: 'إلغاء',
+  postedOk: 'أُضيفت حاجتك إلى اللوحة.', postedMesh: 'نُشر المنشور إلى {n} هواتف قريبة.', postedQ: 'المنشور في انتظار الإرسال وسيُرسل عند توفر الاتصال.',
+  sosTitle: 'مكالمة طوارئ', sosBody: 'اتصل بهذا الرقم من هاتفك. في التطبيق الحقيقي تنتقل بلمسة إلى تطبيقي AFAD Acil و HAYAT 112.',
+  call: 'حاول الاتصال', back: 'رجوع', torchOff: 'المس للإطفاء',
+  flushed: 'عاد الاتصال: أُرسل {n} عنصر في الانتظار.', meshN: 'تم العثور على {n} هواتف قريبة', meshZero: 'لا توجد هواتف قريبة تستخدم التطبيق',
+  example: 'بيانات تجريبية', foot: 'Hazır Mahalle نموذج تفاعلي · Umay Hüma Çetin · بيانات تجريبية وليست مناطق تجمع حقيقية. في الطوارئ اتصل بالرقم 112.',
+  hello: 'مرحبًا', homeLead: 'خصص اليوم 5 دقائق لاستعدادك.', demo: 'إعدادات العرض', demoNote: 'في التطبيق الحقيقي يُكتشف الاتصال والموقع تلقائيًا. هنا يمكنك تجربة حالات مختلفة.', tileKit: '{a}/{b} عناصر جاهزة', tileMeet: 'اللقاء: {m}', tileMap: 'أقرب منطقة {n} م', tileBoard: '{n} حاجات مفتوحة', cycle: 'غيّر الاتصال (عرض)', kitProg: '{a}/{b} عناصر جاهزة', afetSub: 'أنا بأمان، المساعدة، منطقة التجمع و112 في شاشة واحدة',
+  next1: 'التالي: ', dirs: ['شمال','شمال شرق','شرق','جنوب شرق','جنوب','جنوب غرب','غرب','شمال غرب']
+}
+};
+
+/* ---------- region data (sample) ---------- */
+var KIT = [
+  { id: 'water', w: 10, tr: 'Kişi başı en az 3 günlük içme suyu', en: 'Drinking water for at least 3 days per person', ar: 'مياه شرب لثلاثة أيام على الأقل لكل شخص' },
+  { id: 'food', w: 8, tr: 'Bozulmayan, pişirme gerektirmeyen yiyecek', en: 'Non-perishable food that needs no cooking', ar: 'طعام لا يفسد ولا يحتاج إلى طهي' },
+  { id: 'aid', w: 8, tr: 'İlk yardım çantası', en: 'First aid kit', ar: 'حقيبة إسعافات أولية' },
+  { id: 'meds', w: 8, tr: 'Düzenli kullandığın ilaçlar ve reçete fotokopisi', en: 'Your regular medicines and a copy of prescriptions', ar: 'أدويتك المعتادة ونسخة من الوصفات' },
+  { id: 'torch', w: 6, tr: 'El feneri ve yedek pil', en: 'Torch and spare batteries', ar: 'مصباح يدوي وبطاريات احتياطية' },
+  { id: 'power', w: 6, tr: 'Dolu powerbank ve şarj kablosu', en: 'Charged power bank and cable', ar: 'شاحن محمول مشحون وكابل' },
+  { id: 'radio', w: 4, tr: 'Pilli radyo', en: 'Battery radio', ar: 'راديو يعمل بالبطاريات' },
+  { id: 'whistle', w: 4, tr: 'Düdük', en: 'Whistle', ar: 'صافرة' },
+  { id: 'docs', w: 6, tr: 'Kimlik ve belgelerin fotokopisi (su geçirmez poşette)', en: 'Copies of ID and documents in a waterproof bag', ar: 'نسخ من الهوية والوثائق في كيس مقاوم للماء' },
+  { id: 'cash', w: 3, tr: 'Bir miktar nakit para', en: 'Some cash', ar: 'بعض النقود' },
+  { id: 'clothes', w: 4, tr: 'Yedek giysi ve sağlam ayakkabı', en: 'Spare clothes and sturdy shoes', ar: 'ملابس احتياطية وحذاء متين' },
+  { id: 'hyg', w: 3, tr: 'Islak mendil, hijyen malzemesi, maske', en: 'Wet wipes, hygiene items, masks', ar: 'مناديل مبللة ومستلزمات نظافة وكمامات' }
+];
+var R = {
+  ist: {
+    extras: [
+      { id: 'i_bed', w: 4, tr: 'Ayakkabı ve fener yatağın yanında (gece apartmandan çıkış için)', en: 'Shoes and torch by your bed (for leaving the building at night)', ar: 'حذاء ومصباح بجانب السرير (للخروج من المبنى ليلًا)' },
+      { id: 'i_bag2', w: 4, tr: 'İş veya okul için ikinci küçük çanta (farklı yakada kalırsan)', en: 'A second small bag at work or school (if you are stuck on the other side)', ar: 'حقيبة صغيرة ثانية في العمل أو المدرسة (إذا علقت في الضفة الأخرى)' }
+    ],
+    areas: [
+      { id: 'a1', x: 52, y: 40, w: 70, h: 44, small: true, alt: 'a2', tr: 'Çınar Parkı', en: 'Çınar Park', ar: 'حديقة تشينار' },
+      { id: 'a2', x: 250, y: 50, w: 82, h: 62, tr: 'Spor Sahası', en: 'Sports Field', ar: 'الملعب الرياضي' },
+      { id: 'a3', x: 120, y: 214, w: 96, h: 54, tr: 'Okul Bahçesi', en: 'School Yard', ar: 'ساحة المدرسة' }
+    ],
+    meets: [{ id: 'a2', key: 'a2' }, { id: 'a3', key: 'a3' }],
+    you: { x: 168, y: 150 },
+    diag: false
+  },
+  mal: {
+    extras: [
+      { id: 'm_therm', w: 4, tr: 'Termal battaniye ve kalın giysi, bere, eldiven', en: 'Thermal blanket, warm clothes, hat and gloves', ar: 'بطانية حرارية وملابس دافئة وقبعة وقفازات' },
+      { id: 'm_co', w: 4, tr: 'Sobalı ortamda havalandırma kuralını okudum', en: 'I read the ventilation rule for heated tents and containers', ar: 'قرأت قاعدة التهوية عند استخدام المدفأة' }
+    ],
+    areas: [
+      { id: 'b1', x: 40, y: 168, w: 92, h: 60, tr: 'Pazar Alanı', en: 'Market Square', ar: 'ساحة السوق' },
+      { id: 'b2', x: 236, y: 40, w: 90, h: 52, tr: 'Okul Bahçesi', en: 'School Yard', ar: 'ساحة المدرسة' },
+      { id: 'b3', x: 230, y: 210, w: 96, h: 58, tr: 'Konteyner Kent Girişi', en: 'Container Site Gate', ar: 'مدخل مجمع الحاويات' }
+    ],
+    meets: [{ id: 'b1', key: 'b1' }, { id: 'b3', key: 'b3' }],
+    you: { x: 176, y: 132 },
+    diag: true
+  }
+};
+var BOARD_SEED = {
+  ist: [
+    { id: 'v1', verified: true, age: 40, tr: 'Muhtarlık: Okul Bahçesi’nde su ve battaniye dağıtımı 14.00’te başlıyor.', en: 'Mukhtar’s office: water and blanket distribution at the School Yard starts at 14:00.', ar: 'المختارية: توزيع الماء والبطانيات في ساحة المدرسة يبدأ الساعة 14:00.' },
+    { id: 'n1', cat: 'water', qty: 6, unit: 'pcs', age: 25, status: 'open', tr: 'Çınar Parkı yakını, 3 yaşlı komşu', en: 'Near Çınar Park, 3 elderly neighbours', ar: 'قرب حديقة تشينار، 3 جيران مسنّين' },
+    { id: 'n2', cat: 'baby', qty: 2, unit: 'pcs', age: 70, status: 'claimed', tr: '6 aylık bebek için', en: 'For a 6-month-old baby', ar: 'لرضيع عمره 6 أشهر' },
+    { id: 'n3', cat: 'medicine', qty: 1, unit: 'pcs', age: 800, status: 'open', tr: 'Tansiyon ilacı, reçetesi var', en: 'Blood pressure medicine, has prescription', ar: 'دواء ضغط الدم، الوصفة متوفرة' },
+    { id: 'n4', cat: 'blanket', qty: 4, unit: 'ppl', age: 190, status: 'done', tr: 'Spor Sahası’nda kalan aile', en: 'Family staying at the Sports Field', ar: 'عائلة مقيمة في الملعب الرياضي' }
+  ],
+  mal: [
+    { id: 'v1', verified: true, age: 55, tr: 'İl AFAD: Pazar Alanı’nda çadır ve ısıtıcı dağıtımı var. Kimlik yanınızda olsun.', en: 'Provincial AFAD: tents and heaters are being handed out at the Market Square. Bring ID.', ar: 'إدارة AFAD في الولاية: توزيع خيام ومدافئ في ساحة السوق. أحضروا الهوية.' },
+    { id: 'n1', cat: 'blanket', qty: 5, unit: 'ppl', age: 30, status: 'open', tr: 'Gece çok soğuk, çadırda 5 kişiyiz', en: 'Very cold at night, 5 of us in a tent', ar: 'البرد شديد ليلًا، نحن 5 في خيمة' },
+    { id: 'n2', cat: 'food', qty: 3, unit: 'ppl', age: 95, status: 'claimed', tr: 'Konteyner kent girişi, sıcak yemek', en: 'Container site gate, hot meal', ar: 'مدخل مجمع الحاويات، وجبة ساخنة' },
+    { id: 'n3', cat: 'shelter', qty: 2, unit: 'ppl', age: 760, status: 'open', tr: 'Evimiz hasarlı, tespit bekliyoruz', en: 'Our home is damaged, waiting for inspection', ar: 'منزلنا متضرر، ننتظر الفحص' },
+    { id: 'n4', cat: 'water', qty: 10, unit: 'pcs', age: 210, status: 'done', tr: 'Okul bahçesindeki aileler', en: 'Families in the school yard', ar: 'العائلات في ساحة المدرسة' }
+  ]
+};
+var FAMILY = [
+  { ini: 'E', tr: 'Elif (anne)', en: 'Elif (mother)', ar: 'إليف (الأم)', safe: '04:31', via: 3 },
+  { ini: 'M', tr: 'Mert (kardeş)', en: 'Mert (brother)', ar: 'مرت (الأخ)', safe: null },
+  { ini: 'H', tr: 'Hasan (amca)', en: 'Hasan (uncle)', ar: 'حسن (العم)', safe: '04:52', via: 0, out: true }
+];
+
+/* ---------- icons ---------- */
+var I = {
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  kit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M12 11v5M9.5 13.5h5"/></svg>',
+  fam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M2.5 20c.6-3.4 2.8-5.5 5.5-5.5s4.9 2.1 5.5 5.5M14 15.2c.9-.5 1.9-.7 3-.7 2.4 0 4 1.8 4.5 5"/></svg>',
+  map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-6-6.5-11A6.5 6.5 0 0 1 18.5 10C18.5 15 12 21 12 21z"/><circle cx="12" cy="10" r="2.4"/></svg>',
+  board: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+  safe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>',
+  help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V6a1.5 1.5 0 0 1 3 0v5M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V5.5a1.5 1.5 0 0 1 3 0V12M16 9a1.5 1.5 0 0 1 3 0v4.5A7.5 7.5 0 0 1 11.5 21 6.5 6.5 0 0 1 5 14.5L4.2 12a1.5 1.5 0 0 1 2.8-1"/></svg>',
+  sos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
+  whistle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="14" r="5"/><path d="M12 10h9v4h-5M9 14h.01"/></svg>',
+  torch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l-1 5H9zM9 8h6v12a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zM12 12v2"/></svg>',
+  exit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>',
+  speak: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7"/></svg>',
+  water: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>',
+  blanket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H4zM4 16l3 3h13v-3M8 9h8"/></svg>',
+  medicine: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8.5" width="18" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M9.5 9.5l5 5"/></svg>',
+  baby: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3h4v3h-4zM8.5 8a1.5 1.5 0 0 1 1.5-2h4a1.5 1.5 0 0 1 1.5 2V20a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1zM8.5 12h7"/></svg>',
+  food: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16a8 8 0 0 1-16 0zM8 8c0-1.5 1-1.5 1-3M12 8c0-1.5 1-1.5 1-3M16 8c0-1.5 1-1.5 1-3"/></svg>',
+  shelter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20L12 4l10 16zM12 4v16M8.5 20l3.5-6 3.5 6"/></svg>',
+  check: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l6 18-6-4-6 4z"/></svg>'
+};
+var CATS = ['water', 'blanket', 'medicine', 'baby', 'food', 'shelter'];
+
+/* ---------- state ---------- */
+var st = {
+  lang: load('lang', 'tr'), region: load('region', 'mal'), conn: 'internet', tab: 'home', afet: false, phase: 0,
+  kit: load('kit', { water: true, aid: true, torch: true, docs: true, whistle: true }),
+  meet: load('meet', { ist: 'a2', mal: 'b1' }), big: load('big', false),
+  outbox: [], board: JSON.parse(JSON.stringify(BOARD_SEED)), filter: 'all', mapView: 'map',
+  sheet: null, needCat: 'water', torch: false, whistle: false, toast: null, mineClaims: 0, seq: 1
+};
+if (!S[st.lang]) st.lang = 'tr';
+if (!R[st.region]) st.region = 'mal';
+
+function t(k, v) { var s = (S[st.lang][k] !== undefined ? S[st.lang][k] : S.tr[k]); if (v) { Object.keys(v).forEach(function (x) { s = String(s).split('{' + x + '}').join(v[x]); }); } return s; }
+function L(o) { return o[st.lang] || o.tr; }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function reg() { return R[st.region]; }
+function announce(msg) { var l = document.getElementById('live'); l.textContent = ''; setTimeout(function () { l.textContent = msg; }, 30); }
+
+/* ---------- registration, location gate, personal code ---------- */
+var S2 = {
+tr: {
+  regTitle: 'Kayıt ol', regLead: 'Afet anında ailen ve mahallen sana ulaşabilsin diye birkaç bilgi istiyoruz.',
+  fAd: 'Ad', fSoyad: 'Soyad', fTel: 'Cep telefonu', fTelHint: '10 hane, başında 0 olmadan', fIl: 'İl', fIlce: 'İlçe', fMah: 'Mahalle', fMahPh: 'Örn. Çarşı Mahallesi',
+  fAdres: 'Açık adres', fAdresPh: 'Sokak, bina no, daire', fAdresHint: 'Adresin şifreli saklanır. Panoda ve haritada kimse tam adresini göremez.',
+  kvkk: 'Kişisel verilerimin ve konumumun afet hazırlığı ve yardım amacıyla işlenmesine ilişkin aydınlatma metnini okudum, onaylıyorum.',
+  regBtn: 'Kaydı tamamla', regDemo: 'Prototip: bilgiler yalnızca bu tarayıcıda saklanır, hiçbir yere gönderilmez. Gerçek uygulamada telefon SMS koduyla doğrulanır.',
+  eAd: 'Adını yaz (en az 2 harf).', eSoyad: 'Soyadını yaz (en az 2 harf).', eTel: 'Cep numarası 5 ile başlayan 10 hane olmalı. Örnek: 555 123 45 67',
+  eMah: 'Mahalleni yaz.', eAdres: 'Açık adresini yaz (en az 10 karakter).', eKvkk: 'Devam etmek için aydınlatma metnini onayla.', eForm: 'Formda düzeltilmesi gereken alanlar var.',
+  welcome: 'Kaydın tamam. Kişisel kodun: {c}',
+  locTitle: 'Konum izni gerekiyor', locLead: 'Hazır Mahalle her açıldığında konumunu sorar. Konumun şunlar için kullanılır:',
+  locU1: 'En yakın toplanma alanına yön ve mesafe göstermek', locU2: 'Güvendeyim mesajına konumunu eklemek', locU3: 'Ailenin seni haritada görebilmesi (sen izin verirsen)',
+  locOffline: 'Konum GPS uydularından alınır, internet gerekmez.', locBtn: 'Konumuma izin ver',
+  osTitle: '“Hazır Mahalle” konumunuza erişsin mi?', osWhile: 'Uygulamayı kullanırken', osOnce: 'Yalnızca bu sefer', osDeny: 'İzin verme',
+  denTitle: 'Konum izni olmadan devam edilemez', denLead: 'Toplanma alanına yön, aile haritası ve konumlu Güvendeyim mesajı konum olmadan çalışmaz. İzni istediğin zaman telefon ayarlarından da açabilirsin.',
+  retry: 'Tekrar izin iste', still112: 'Acil durumda konum izni gerekmez:', call112: '112’yi ara',
+  locNow: 'Konumun', locAcc: '±{n} m', locAge0: 'şimdi', locSrc: 'GPS · internet gerekmez', locRefresh: 'Konumu yenile', locOnce: 'Bu oturum için izin verildi',
+  locNoNet: 'İnternet yok, konum yine de güncellendi.', locUpdated: 'Konum güncellendi.',
+  myCode: 'Senin kodun', myCodeHint: 'Ailen bu kodu girerek seni aile planına ekleyebilir. Kod gizli değildir ama ekleme senin onayınla kesinleşir.',
+  copy: 'Kopyala', copied: 'Kod kopyalandı.', copyFail: 'Kopyalanamadı; kodu seçip elle kopyala.',
+  addByCode: 'Kodla aile üyesi ekle', addHint: 'Ailendeki kişinin uygulamadaki kodunu gir.', send: 'İstek gönder',
+  eCodeFmt: 'Kod HM-XXXX-XXXX biçiminde olmalı.', eCodeSelf: 'Bu senin kendi kodun. Ailendeki kişinin kodunu gir.', eCodeNone: 'Bu koda ait kullanıcı bulunamadı. Kodu kontrol et.', eCodeDup: 'Bu kişi zaten ailende ya da isteği bekliyor.',
+  reqSent: '{n} kişisine istek gönderildi. Onaylayınca ailene eklenecek.', reqQueued: 'İstek telefonda bekliyor; bağlantı gelince gidecek.', reqOk: '{n} aileye katıldı.',
+  pending: 'Onay bekliyor', queuedTag: 'Telefonda bekliyor',
+  incoming: 'Ailene katılmak isteyenler', wantsJoin: 'senin kodunu girdi', approve: 'Onayla', reject: 'Reddet', approved: '{n} aileye eklendi.', rejected: 'İstek reddedildi.',
+  members: 'Aile üyeleri', you: 'Sen', profile: 'Kayıt bilgilerin', del: 'Bilgilerimi sil', delQ: 'Tüm kayıt bilgilerin, aile planın ve konum geçmişin bu cihazdan silinecek. Emin misin?', delYes: 'Evet, sil', delNo: 'Vazgeç',
+  demoCodes: 'Denemek için kodlar: {c}', reopen: 'Uygulamayı yeniden aç (izin tekrar sorulur)', hello2: 'Merhaba {n}'
+},
+en: {
+  regTitle: 'Sign up', regLead: 'We ask for a few details so your family and neighbours can reach you in a disaster.',
+  fAd: 'First name', fSoyad: 'Last name', fTel: 'Mobile number', fTelHint: '10 digits, without the leading 0', fIl: 'Province', fIlce: 'District', fMah: 'Neighbourhood', fMahPh: 'e.g. Çarşı Mahallesi',
+  fAdres: 'Full address', fAdresPh: 'Street, building no, flat', fAdresHint: 'Your address is stored encrypted. Nobody sees your exact address on the board or map.',
+  kvkk: 'I have read the privacy notice on processing my personal data and location for disaster preparedness and aid, and I agree.',
+  regBtn: 'Finish sign-up', regDemo: 'Prototype: details are stored only in this browser and sent nowhere. The real app verifies your number by SMS.',
+  eAd: 'Enter your first name (at least 2 letters).', eSoyad: 'Enter your last name (at least 2 letters).', eTel: 'Mobile number must be 10 digits starting with 5. Example: 555 123 45 67',
+  eMah: 'Enter your neighbourhood.', eAdres: 'Enter your full address (at least 10 characters).', eKvkk: 'Accept the privacy notice to continue.', eForm: 'Some fields need fixing.',
+  welcome: 'You’re signed up. Your personal code: {c}',
+  locTitle: 'Location access needed', locLead: 'Hazır Mahalle asks for your location every time it opens. It is used to:',
+  locU1: 'Show direction and distance to the nearest assembly area', locU2: 'Add your location to “I’m safe” messages', locU3: 'Let your family see you on the map (if you allow it)',
+  locOffline: 'Location comes from GPS satellites and needs no internet.', locBtn: 'Allow my location',
+  osTitle: 'Allow “Hazır Mahalle” to access your location?', osWhile: 'While using the app', osOnce: 'Only this time', osDeny: 'Don’t allow',
+  denTitle: 'The app can’t continue without location', denLead: 'Directions to assembly areas, the family map and “I’m safe” with location don’t work without it. You can also turn it on in your phone settings.',
+  retry: 'Ask again', still112: 'No location permission is needed in an emergency:', call112: 'Call 112',
+  locNow: 'Your location', locAcc: '±{n} m', locAge0: 'just now', locSrc: 'GPS · no internet needed', locRefresh: 'Refresh location', locOnce: 'Allowed for this session',
+  locNoNet: 'No internet, but your location still updated.', locUpdated: 'Location updated.',
+  myCode: 'Your code', myCodeHint: 'Your family can add you to their plan with this code. It isn’t secret, but you confirm every addition.',
+  copy: 'Copy', copied: 'Code copied.', copyFail: 'Couldn’t copy; select the code and copy it yourself.',
+  addByCode: 'Add a family member by code', addHint: 'Enter the person’s code from their app.', send: 'Send request',
+  eCodeFmt: 'Codes look like HM-XXXX-XXXX.', eCodeSelf: 'That’s your own code. Enter your family member’s code.', eCodeNone: 'No user has this code. Check it and try again.', eCodeDup: 'This person is already in your family or has a pending request.',
+  reqSent: 'Request sent to {n}. They’ll join once they accept.', reqQueued: 'Request is waiting on your phone and will send when there is signal.', reqOk: '{n} joined your family.',
+  pending: 'Waiting for approval', queuedTag: 'Waiting on phone',
+  incoming: 'People asking to join', wantsJoin: 'entered your code', approve: 'Approve', reject: 'Decline', approved: '{n} added to your family.', rejected: 'Request declined.',
+  members: 'Family members', you: 'You', profile: 'Your details', del: 'Delete my data', delQ: 'All your details, family plan and location history will be removed from this device. Are you sure?', delYes: 'Yes, delete', delNo: 'Cancel',
+  demoCodes: 'Codes to try: {c}', reopen: 'Reopen the app (asks permission again)', hello2: 'Hello {n}'
+},
+ar: {
+  regTitle: 'التسجيل', regLead: 'نطلب بعض المعلومات حتى تتمكن عائلتك وجيرانك من الوصول إليك وقت الكارثة.',
+  fAd: 'الاسم', fSoyad: 'اللقب', fTel: 'رقم الجوال', fTelHint: '10 أرقام دون الصفر في البداية', fIl: 'الولاية', fIlce: 'القضاء', fMah: 'الحي', fMahPh: 'مثلًا: حي تشارشي',
+  fAdres: 'العنوان الكامل', fAdresPh: 'الشارع، رقم المبنى، الشقة', fAdresHint: 'يُحفظ عنوانك مشفرًا. لا يرى أحد عنوانك الكامل على اللوحة أو الخريطة.',
+  kvkk: 'قرأت نص الإفصاح عن معالجة بياناتي الشخصية وموقعي لأغراض الاستعداد للكوارث والمساعدة، وأوافق عليه.',
+  regBtn: 'أكمل التسجيل', regDemo: 'نموذج: تُحفظ المعلومات في هذا المتصفح فقط ولا تُرسل إلى أي مكان. في التطبيق الحقيقي يُتحقق من الرقم برسالة SMS.',
+  eAd: 'اكتب اسمك (حرفان على الأقل).', eSoyad: 'اكتب لقبك (حرفان على الأقل).', eTel: 'يجب أن يتكون رقم الجوال من 10 أرقام ويبدأ بـ 5. مثال: 555 123 45 67',
+  eMah: 'اكتب اسم حيّك.', eAdres: 'اكتب عنوانك الكامل (10 أحرف على الأقل).', eKvkk: 'وافق على نص الإفصاح للمتابعة.', eForm: 'بعض الحقول تحتاج إلى تصحيح.',
+  welcome: 'اكتمل تسجيلك. رمزك الشخصي: {c}',
+  locTitle: 'مطلوب إذن الموقع', locLead: 'يسأل Hazır Mahalle عن موقعك في كل مرة يُفتح فيها. يُستخدم موقعك من أجل:',
+  locU1: 'عرض اتجاه أقرب منطقة تجمع ومسافتها', locU2: 'إضافة موقعك إلى رسالة «أنا بأمان»', locU3: 'تمكين عائلتك من رؤيتك على الخريطة (إذا سمحت)',
+  locOffline: 'يُؤخذ الموقع من أقمار GPS ولا يحتاج إلى إنترنت.', locBtn: 'اسمح بموقعي',
+  osTitle: 'هل تسمح لـ «Hazır Mahalle» بالوصول إلى موقعك؟', osWhile: 'أثناء استخدام التطبيق', osOnce: 'هذه المرة فقط', osDeny: 'لا تسمح',
+  denTitle: 'لا يمكن المتابعة دون إذن الموقع', denLead: 'لا يعمل اتجاه مناطق التجمع وخريطة العائلة ورسالة «أنا بأمان» مع الموقع دون هذا الإذن. يمكنك أيضًا تفعيله من إعدادات الهاتف.',
+  retry: 'اطلب الإذن مجددًا', still112: 'لا يلزم إذن الموقع في حالة الطوارئ:', call112: 'اتصل بالرقم 112',
+  locNow: 'موقعك', locAcc: '±{n} م', locAge0: 'الآن', locSrc: 'GPS · لا يحتاج إلى إنترنت', locRefresh: 'حدّث الموقع', locOnce: 'مسموح لهذه الجلسة',
+  locNoNet: 'لا يوجد إنترنت، ومع ذلك تحدّث موقعك.', locUpdated: 'تم تحديث الموقع.',
+  myCode: 'رمزك', myCodeHint: 'يمكن لعائلتك إضافتك إلى خطتها بهذا الرمز. الرمز ليس سريًا، لكن الإضافة تتم بموافقتك.',
+  copy: 'نسخ', copied: 'تم نسخ الرمز.', copyFail: 'تعذر النسخ؛ حدّد الرمز وانسخه يدويًا.',
+  addByCode: 'أضف فردًا من العائلة بالرمز', addHint: 'أدخل رمز الشخص من تطبيقه.', send: 'أرسل الطلب',
+  eCodeFmt: 'يجب أن يكون الرمز بصيغة HM-XXXX-XXXX.', eCodeSelf: 'هذا رمزك أنت. أدخل رمز فرد العائلة.', eCodeNone: 'لا يوجد مستخدم بهذا الرمز. تحقّق منه.', eCodeDup: 'هذا الشخص في عائلتك بالفعل أو لديه طلب قيد الانتظار.',
+  reqSent: 'أُرسل الطلب إلى {n}. سيُضاف عند موافقته.', reqQueued: 'الطلب في انتظار الإرسال وسيُرسل عند توفر الاتصال.', reqOk: 'انضم {n} إلى عائلتك.',
+  pending: 'بانتظار الموافقة', queuedTag: 'في انتظار الإرسال',
+  incoming: 'طلبات الانضمام', wantsJoin: 'أدخل رمزك', approve: 'موافقة', reject: 'رفض', approved: 'أُضيف {n} إلى عائلتك.', rejected: 'رُفض الطلب.',
+  members: 'أفراد العائلة', you: 'أنت', profile: 'معلوماتك', del: 'احذف بياناتي', delQ: 'ستُحذف كل معلوماتك وخطة العائلة وسجل الموقع من هذا الجهاز. هل أنت متأكد؟', delYes: 'نعم، احذف', delNo: 'إلغاء',
+  demoCodes: 'رموز للتجربة: {c}', reopen: 'أعد فتح التطبيق (يُطلب الإذن مجددًا)', hello2: 'مرحبًا {n}'
+}
+};
+['tr', 'en', 'ar'].forEach(function (l) { Object.keys(S2[l]).forEach(function (k) { S[l][k] = S2[l][k]; }); });
+
+var ILCELER = { mal: ['Yeşilyurt', 'Battalgazi'], ist: ['Bahçelievler', 'Kadıköy'] };
+var IL_AD = { mal: 'Malatya', ist: 'İstanbul' };
+var BASE = { mal: { lat: 38.3534, lon: 38.3075 }, ist: { lat: 41.0010, lon: 28.8555 } };
+var DIRECTORY = {
+  'HM-4TNA-8XRE': { name: 'Mert Demir', ini: 'M', rel: { tr: 'kardeş', en: 'brother', ar: 'الأخ' } },
+  'HM-C2VB-M7HU': { name: 'Deniz Demir', ini: 'D', rel: { tr: 'kızı', en: 'daughter', ar: 'الابنة' } },
+  'HM-R8LF-2NQA': { name: 'Ayşe Kara', ini: 'A', rel: { tr: 'komşu', en: 'neighbour', ar: 'الجارة' } }
+};
+var FAM_SEED = [
+  { code: 'HM-7K3P-Q9WD', name: 'Elif Demir', ini: 'E', rel: { tr: 'anne', en: 'mother', ar: 'الأم' }, safe: '04:31', via: 3 },
+  { code: 'HM-Y5GS-K3PZ', name: 'Hasan Demir', ini: 'H', rel: { tr: 'amca', en: 'uncle', ar: 'العم' }, safe: '04:52', via: 0, out: true }
+];
+var ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+function makeCode() {
+  var a = new Uint8Array(8), s = 'HM-';
+  try { crypto.getRandomValues(a); } catch (e) { for (var j = 0; j < 8; j++) a[j] = Math.floor(Math.random() * 256); }
+  for (var i = 0; i < 8; i++) { if (i === 4) s += '-'; s += ALPHA.charAt(a[i] % ALPHA.length); }
+  return s;
+}
+function normCode(v) {
+  var c = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (c.indexOf('HM') === 0) c = c.slice(2);
+  c = c.slice(0, 8);
+  return c.length ? 'HM-' + c.slice(0, 4) + (c.length > 4 ? '-' + c.slice(4) : '') : '';
+}
+function codeValid(c) { return /^HM-[A-HJKMNP-Z2-9]{4}-[A-HJKMNP-Z2-9]{4}$/.test(c); }
+function telDigits(v) { var d = String(v || '').replace(/\D/g, ''); if (d.length === 11 && d[0] === '0') d = d.slice(1); if (d.length === 12 && d.slice(0, 2) === '90') d = d.slice(2); return d; }
+function telPretty(d) { return '0' + d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6, 8) + ' ' + d.slice(8, 10); }
+function telMasked(d) { return '0' + d.slice(0, 3) + ' *** ** ' + d.slice(8, 10); }
+
+st.me = load('me', null);
+st.fam = load('fam', null) || JSON.parse(JSON.stringify(FAM_SEED));
+st.reqs = load('reqs', []);
+st.incoming = load('incoming', [{ code: 'HM-QQUS-YH6Z', name: 'Selin Yılmaz', ini: 'S' }]);
+st.fix = load('fix', null);
+st.locPerm = null;        // asked on every app open — never persisted
+st.osDialog = false;
+st.regErr = {};
+st.codeErr = '';
+st.confirmDel = false;
+if (st.me && R[st.me.il]) st.region = st.me.il;
+
+function saveFam() { save('fam', st.fam); save('reqs', st.reqs); save('incoming', st.incoming); }
+function newFix(moved) {
+  var b = BASE[st.region], prev = st.fix && st.fix.r === st.region ? st.fix : null;
+  var lat = prev && moved ? prev.lat + (Math.random() - .5) * .0004 : b.lat + (Math.random() - .5) * .0002;
+  var lon = prev && moved ? prev.lon + (Math.random() - .5) * .0004 : b.lon + (Math.random() - .5) * .0002;
+  st.fix = { lat: lat, lon: lon, acc: 4 + Math.round(Math.random() * 8), at: Date.now(), r: st.region };
+  save('fix', st.fix);
+}
+function fixAge() {
+  if (!st.fix) return '';
+  var m = Math.floor((Date.now() - st.fix.at) / 60000);
+  return m < 1 ? t('locAge0') : ago(m);
+}
+function locLine(compact) {
+  if (!st.fix) return '';
+  var coords = st.fix.lat.toFixed(4) + ', ' + st.fix.lon.toFixed(4);
+  if (compact) return '<span class="locmini" dir="ltr">' + I.map.replace('<svg', '<svg width="14" height="14"') + t('locAcc', { n: st.fix.acc }) + ' · ' + fixAge() + '</span>';
+  return '<div class="card loccard"><div class="row"><div class="cat-ico locico" aria-hidden="true">' + I.map + '</div><div class="grow"><div class="eyebrow">' + t('locNow') + '</div><strong dir="ltr" class="mono">' + coords + '</strong><div class="small muted">' + t('locAcc', { n: st.fix.acc }) + ' · ' + fixAge() + '</div></div><button class="btn sm" data-act="relocate">' + t('locRefresh') + '</button></div><p class="small"><span class="tag go">' + t('locSrc') + '</span>' + (st.locPerm === 'once' ? ' <span class="tag">' + t('locOnce') + '</span>' : '') + '</p></div>';
+}
+
+function vRegister() {
+  var e = st.regErr, d = st.regDraft || {}, il = d.il || st.region;
+  function fld(id, lab, inner, err, hint) {
+    return '<div class="field"><label for="' + id + '"><span>' + lab + '</span></label>' + inner + (hint ? '<small class="muted small" id="' + id + '_h">' + hint + '</small>' : '') + (err ? '<small class="ferr" id="' + id + '_e">' + err + '</small>' : '') + '</div>';
+  }
+  function inp(id, type, val, extra) { return '<input class="full' + (e[id] ? ' bad' : '') + '" id="' + id + '" type="' + type + '" value="' + esc(val || '') + '"' + (e[id] ? ' aria-invalid="true" aria-describedby="' + id + '_e"' : '') + (extra || '') + '>'; }
+  var h = '<div class="hello"><h2>' + t('regTitle') + '</h2><p class="muted">' + t('regLead') + '</p></div>';
+  if (Object.keys(e).length) h += '<div class="alertbox" role="alert">' + t('eForm') + '</div>';
+  h += '<form id="regForm" class="card" novalidate>';
+  h += '<div class="two">' + fld('rAd', t('fAd'), inp('rAd', 'text', d.ad, ' autocomplete="given-name" maxlength="60"'), e.rAd) + fld('rSoyad', t('fSoyad'), inp('rSoyad', 'text', d.soyad, ' autocomplete="family-name" maxlength="60"'), e.rSoyad) + '</div>';
+  h += fld('rTel', t('fTel'), '<div class="telrow" dir="ltr"><span class="pre">+90</span>' + inp('rTel', 'tel', d.tel, ' inputmode="numeric" autocomplete="tel-national" placeholder="5XX XXX XX XX" maxlength="14"') + '</div>', e.rTel, t('fTelHint'));
+  h += '<div class="two">' + fld('rIl', t('fIl'), '<select class="full" id="rIl"><option value="mal"' + (il === 'mal' ? ' selected' : '') + '>Malatya</option><option value="ist"' + (il === 'ist' ? ' selected' : '') + '>İstanbul</option></select>') +
+       fld('rIlce', t('fIlce'), '<select class="full" id="rIlce">' + ILCELER[il].map(function (x) { return '<option' + (d.ilce === x ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select>') + '</div>';
+  h += fld('rMah', t('fMah'), inp('rMah', 'text', d.mah, ' placeholder="' + esc(t('fMahPh')) + '" maxlength="60"'), e.rMah);
+  h += fld('rAdres', t('fAdres'), '<textarea class="full' + (e.rAdres ? ' bad' : '') + '" id="rAdres" rows="2" maxlength="200" autocomplete="street-address" placeholder="' + esc(t('fAdresPh')) + '"' + (e.rAdres ? ' aria-invalid="true"' : '') + '>' + esc(d.adres || '') + '</textarea>', e.rAdres, t('fAdresHint'));
+  h += '<label class="kvkk' + (e.rKvkk ? ' bad' : '') + '" for="rKvkk"><input type="checkbox" id="rKvkk"' + (d.kvkk ? ' checked' : '') + '><span>' + t('kvkk') + '</span></label>' + (e.rKvkk ? '<small class="ferr">' + e.rKvkk + '</small>' : '');
+  h += '<button class="btn primary block" type="submit">' + t('regBtn') + '</button><p class="small muted">' + t('regDemo') + '</p></form>';
+  return h;
+}
+function readReg() {
+  var g = function (id) { var el = document.getElementById(id); return el ? (el.type === 'checkbox' ? el.checked : el.value) : ''; };
+  return { ad: g('rAd'), soyad: g('rSoyad'), tel: g('rTel'), il: g('rIl') || st.region, ilce: g('rIlce'), mah: g('rMah'), adres: g('rAdres'), kvkk: g('rKvkk') };
+}
+function submitReg() {
+  var d = readReg(), e = {}, tel = telDigits(d.tel);
+  if (d.ad.trim().length < 2) e.rAd = t('eAd');
+  if (d.soyad.trim().length < 2) e.rSoyad = t('eSoyad');
+  if (!/^5\d{9}$/.test(tel)) e.rTel = t('eTel');
+  if (d.mah.trim().length < 2) e.rMah = t('eMah');
+  if (d.adres.trim().length < 10) e.rAdres = t('eAdres');
+  if (!d.kvkk) e.rKvkk = t('eKvkk');
+  st.regDraft = d; st.regErr = e;
+  if (Object.keys(e).length) { render(); var first = document.querySelector('.bad'); if (first) first.focus(); return; }
+  var code; do { code = makeCode(); } while (code === 'HM-QQUS-YH6Z' || DIRECTORY[code]);
+  st.me = { ad: d.ad.trim(), soyad: d.soyad.trim(), tel: tel, il: d.il, ilce: d.ilce, mah: d.mah.trim(), adres: d.adres.trim(), code: code, kvkk: 'aydinlatma-2026-11', at: Date.now() };
+  save('me', st.me); st.region = d.il; save('region', d.il); st.regDraft = null; st.regErr = {};
+  st.tab = 'family';
+  toast(t('welcome', { c: code })); render(); window.scrollTo(0, 0);
+}
+
+function vLocGate() {
+  var denied = st.locPerm === 'denied';
+  var h = '<div class="gate"><div class="gate-ico' + (denied ? ' no' : '') + '" aria-hidden="true">' + I.map + '</div>';
+  if (!denied) {
+    h += '<h2>' + t('locTitle') + '</h2><p class="muted">' + t('locLead') + '</p><ul class="uses"><li>' + I.check + t('locU1') + '</li><li>' + I.check + t('locU2') + '</li><li>' + I.check + t('locU3') + '</li></ul>';
+    h += '<p class="small"><span class="tag go">' + t('locOffline') + '</span></p><button class="btn primary block" data-act="loc-ask">' + t('locBtn') + '</button>';
+  } else {
+    h += '<h2>' + t('denTitle') + '</h2><p class="muted">' + t('denLead') + '</p><button class="btn primary block" data-act="loc-ask">' + t('retry') + '</button>';
+  }
+  h += '<div class="sos112"><span class="small">' + t('still112') + '</span><a class="btn sosbtn" href="tel:112">' + I.sos.replace('<svg', '<svg width="20" height="20"') + t('call112') + ' <span dir="ltr" class="mono">112</span></a></div></div>';
+  return h;
+}
+function osDialog() {
+  return '<div class="scrim" role="presentation"><div class="osdlg" role="dialog" aria-modal="true" aria-labelledby="osT"><div class="os-ico" aria-hidden="true">' + I.map + '</div><p id="osT"><strong>' + t('osTitle') + '</strong></p>' +
+    '<div class="os-map" aria-hidden="true"><span></span></div>' +
+    '<button data-act="loc-res" data-v="granted">' + t('osWhile') + '</button><button data-act="loc-res" data-v="once">' + t('osOnce') + '</button><button data-act="loc-res" data-v="denied">' + t('osDeny') + '</button></div></div>';
+}
+
+function famMemberRow(p, isMe) {
+  var stTxt = isMe ? '<span class="tag sig">' + t('you') + '</span>' : p.safe ? '<span class="tag go">' + I.check + ' ' + t('safeAt', { t: p.safe }) + '</span>' : '<span class="tag warn">' + t('noNews') + '</span>';
+  var via = !isMe && p.safe ? (p.via ? t('viaMesh', { n: p.via }) : t('viaSms')) : '';
+  var rel = p.rel ? (p.rel[st.lang] || p.rel.tr) : '';
+  return '<div class="person"><div class="avatar' + (isMe ? ' me' : '') + '">' + esc(p.ini) + '</div><div class="grow"><strong>' + esc(p.name) + '</strong>' + (rel ? ' <span class="muted small">· ' + esc(rel) + '</span>' : '') +
+    '<div class="small muted mono" dir="ltr">' + esc(p.code) + '</div>' + (p.out ? '<div class="small muted">' + t('outTown') + '</div>' : '') + '<div class="pstat">' + stTxt + (via ? '<span class="small muted">' + via + '</span>' : '') + '</div></div></div>';
+}
+function vFamily() {
+  var r = reg(), me = st.me, h = '<div><h2>' + t('famTitle') + '</h2></div>';
+  h += '<div class="card codecard"><div class="eyebrow">' + t('myCode') + '</div><div class="row"><div class="bigcode grow" dir="ltr" id="myCode">' + esc(me.code) + '</div><button class="btn sm" data-act="copy">' + t('copy') + '</button></div><p class="small muted">' + t('myCodeHint') + '</p></div>';
+  if (st.incoming.length) {
+    h += '<div class="card"><div class="eyebrow">' + t('incoming') + '</div>';
+    st.incoming.forEach(function (q, i) {
+      h += '<div class="person"><div class="avatar">' + esc(q.ini) + '</div><div class="grow"><strong>' + esc(q.name) + '</strong><div class="small muted">' + t('wantsJoin') + '</div></div><div class="row" style="gap:6px"><button class="btn sm primary" data-act="inc-ok" data-v="' + i + '">' + t('approve') + '</button><button class="btn sm" data-act="inc-no" data-v="' + i + '">' + t('reject') + '</button></div></div>';
+    });
+    h += '</div>';
+  }
+  h += '<form class="card" id="codeForm" novalidate><label class="field" for="codeIn"><span>' + t('addByCode') + '</span></label><p class="small muted">' + t('addHint') + '</p>' +
+       '<div class="row"><input class="full mono codein' + (st.codeErr ? ' bad' : '') + '" id="codeIn" dir="ltr" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="HM-XXXX-XXXX" maxlength="12" value="' + esc(st.codeDraft || '') + '"' + (st.codeErr ? ' aria-invalid="true" aria-describedby="codeErr"' : '') + '><button class="btn primary" type="submit">' + t('send') + '</button></div>' +
+       (st.codeErr ? '<small class="ferr" id="codeErr">' + st.codeErr + '</small>' : '') + '</form>';
+  h += '<div class="card"><div class="eyebrow">' + t('members') + '</div>';
+  h += famMemberRow({ name: me.ad + ' ' + me.soyad, ini: me.ad.charAt(0).toUpperCase(), code: me.code }, true);
+  st.fam.forEach(function (p) { h += famMemberRow(p, false); });
+  st.reqs.forEach(function (q) {
+    h += '<div class="person"><div class="avatar dim">' + esc(q.ini) + '</div><div class="grow"><strong>' + esc(q.name) + '</strong><div class="small muted mono" dir="ltr">' + esc(q.code) + '</div></div><span class="tag ' + (q.queued ? 'warn' : '') + '">' + (q.queued ? t('queuedTag') : t('pending')) + '</span></div>';
+  });
+  h += '</div>';
+  h += '<div class="card"><label class="field" for="meetSel"><span>' + t('meet') + '</span><select class="full" id="meetSel" data-meet="1">';
+  r.areas.forEach(function (a) { h += '<option value="' + a.id + '"' + (st.meet[st.region] === a.id ? ' selected' : '') + '>' + esc(L(a)) + '</option>'; });
+  h += '</select></label><p class="small muted">' + t(st.region === 'ist' ? 'meetIst' : 'meetMal') + '</p></div>';
+  var m = r.areas.filter(function (a) { return a.id === st.meet[st.region]; })[0], par = st.fam[0];
+  h += '<div class="card"><div class="eyebrow">' + t('whoami') + '</div><div class="idcard"><div class="small">' + t('wName') + '</div><div class="big">' + esc(me.ad + ' ' + me.soyad) + '</div>' + (par ? '<div class="small">' + t('wParent') + ': ' + esc(par.name.split(' ')[0]) + '</div>' : '') + '<div class="small">' + t('wMeet') + ': <strong>' + esc(m ? L(m) : '') + '</strong></div><div class="small mono" dir="ltr">' + esc(me.code) + '</div></div><p class="small muted">' + t('whoHint') + '</p></div>';
+  h += '<div class="card"><div class="eyebrow">' + t('profile') + '</div><dl class="kv"><dt>' + t('fAd') + '</dt><dd>' + esc(me.ad + ' ' + me.soyad) + '</dd><dt>' + t('fTel') + '</dt><dd dir="ltr">' + telMasked(me.tel) + '</dd><dt>' + t('fMah') + '</dt><dd>' + esc(me.mah + ', ' + me.ilce + ' / ' + IL_AD[me.il]) + '</dd><dt>' + t('fAdres') + '</dt><dd>' + esc(me.adres) + '</dd></dl>';
+  h += st.confirmDel ? '<div class="alertbox" role="alert">' + t('delQ') + '<div class="row" style="margin-top:8px"><button class="btn sm danger" data-act="del-yes">' + t('delYes') + '</button><button class="btn sm" data-act="del-no">' + t('delNo') + '</button></div></div>' : '<button class="btn sm" data-act="del-ask">' + t('del') + '</button>';
+  return h + '</div>';
+}
+function submitCode() {
+  var el = document.getElementById('codeIn'), c = normCode(el && el.value);
+  st.codeDraft = c;
+  var known = st.fam.concat(st.reqs).some(function (p) { return p.code === c; });
+  if (!codeValid(c)) st.codeErr = t('eCodeFmt');
+  else if (c === st.me.code) st.codeErr = t('eCodeSelf');
+  else if (known) st.codeErr = t('eCodeDup');
+  else if (!DIRECTORY[c] && st.conn !== 'none') st.codeErr = t('eCodeNone');
+  else st.codeErr = '';
+  if (st.codeErr) { render(); var f = document.getElementById('codeIn'); if (f) f.focus(); return; }
+  var who = DIRECTORY[c] || { name: c, ini: '?' };
+  var q = { code: c, name: who.name, ini: who.ini, rel: who.rel, queued: st.conn === 'none' };
+  st.reqs.push(q); st.codeDraft = ''; saveFam();
+  toast(q.queued ? t('reqQueued') : t('reqSent', { n: who.name }));
+  render();
+  if (!q.queued) setTimeout(function () { acceptReq(q); }, 2600);
+}
+function acceptReq(q) {
+  if (st.reqs.indexOf(q) < 0) return;
+  if (!DIRECTORY[q.code]) { st.reqs = st.reqs.filter(function (x) { return x !== q; }); saveFam(); toast(t('eCodeNone')); render(); return; }
+  st.reqs = st.reqs.filter(function (x) { return x !== q; });
+  st.fam.push({ code: q.code, name: q.name, ini: q.ini, rel: q.rel, safe: null });
+  saveFam(); toast(t('reqOk', { n: q.name })); render();
+}
+function flushReqs() { st.reqs.forEach(function (q) { if (q.queued) { q.queued = false; setTimeout(function () { acceptReq(q); }, 1800); } }); saveFam(); }
+
+
+/* ---------- score ---------- */
+function kitItems() { return KIT.concat(reg().extras); }
+function score() {
+  var items = kitItems(), tot = 0, got = 0;
+  items.forEach(function (i) { tot += i.w; if (st.kit[i.id]) got += i.w; });
+  var kitPart = tot ? got / tot * 70 : 0;
+  var famPart = (st.meet[st.region] ? 15 : 0) + 15; // 2 contacts saved in the sample
+  return Math.round(kitPart + famPart);
+}
+function nextStep() { var it = kitItems().filter(function (i) { return !st.kit[i.id]; }); return it.length ? L(it[0]) : null; }
+
+/* ---------- messaging ---------- */
+function meshCount() {
+  if (st.region === 'ist') return 4 + Math.floor(Math.random() * 6);
+  return Math.floor(Math.random() * 4);
+}
+function dispatch(m) {
+  var c = st.conn;
+  if (c === 'internet') { m.status = 'ok'; m.via = 'net'; }
+  else if (c === 'sms' && m.kind === 'safe') { m.status = 'ok'; m.via = 'sms'; }
+  else if (c === 'mesh') {
+    var n = meshCount();
+    if (n > 0) { m.status = 'go'; m.n = n; setTimeout(function () { if (m.status === 'go') { m.status = 'ok'; m.via = 'mesh'; afterDeliver(m); render(); } }, 1400); return; }
+    m.status = 'wait';
+  } else { m.status = 'wait'; }
+  afterDeliver(m);
+}
+function afterDeliver(m) {
+  if (m.kind === 'need' && m.postId) {
+    var p = findPost(m.postId);
+    if (p) p.sync = m.status === 'ok' ? (m.via === 'mesh' ? 'mesh' : 'ok') : 'q';
+  }
+}
+function flushQueue() {
+  var waiting = st.outbox.filter(function (m) { return m.status === 'wait'; });
+  if (!waiting.length || st.conn === 'none') return;
+  var sent = 0;
+  waiting.forEach(function (m) { dispatch(m); if (m.status !== 'wait') sent++; });
+  if (sent) toast(t('flushed', { n: sent }));
+}
+function findPost(id) { return st.board[st.region].filter(function (p) { return p.id === id; })[0]; }
+
+/* ---------- toast ---------- */
+var toastTimer = null;
+function toast(text, action) {
+  st.toast = { text: text, action: action || null };
+  announce(text);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { st.toast = null; renderLayer(); }, action ? 5000 : 3200);
+  renderLayer();
+}
+
+/* ---------- map ---------- */
+function nearestArea() {
+  var r = reg(), y = r.you, best = null;
+  r.areas.forEach(function (a) {
+    var cx = a.x + a.w / 2, cy = a.y + a.h / 2, d = Math.hypot(cx - y.x, cy - y.y);
+    if (!best || d < best.d) best = { a: a, d: d, cx: cx, cy: cy };
+  });
+  return best;
+}
+function areaInfo(a) {
+  var y = reg().you, cx = a.x + a.w / 2, cy = a.y + a.h / 2, dx = cx - y.x, dy = cy - y.y;
+  var meters = Math.round(Math.hypot(dx, dy) * 4.2 / 10) * 10;
+  var ang = (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360;
+  return { m: meters, min: Math.max(1, Math.round(meters / 75)), ang: ang, dir: t('dirs')[Math.round(ang / 45) % 8] };
+}
+function mapSVG() {
+  var r = reg(), y = r.you, near = nearestArea(), meetId = st.meet[st.region];
+  var s = '<svg viewBox="0 0 360 300" role="img" aria-label="' + esc(t('mapTitle')) + '">';
+  s += '<rect class="m-block" x="0" y="0" width="360" height="300"/>';
+  var hs = r.diag ? [28, 104, 196, 284] : [24, 112, 186, 280], vs = r.diag ? [30, 150, 216, 338] : [36, 140, 232, 340];
+  hs.forEach(function (h) { s += '<line class="m-street" x1="0" x2="360" y1="' + h + '" y2="' + h + '" stroke-width="12"/>'; });
+  vs.forEach(function (v) { s += '<line class="m-street" y1="0" y2="300" x1="' + v + '" x2="' + v + '" stroke-width="12"/>'; });
+  if (r.diag) s += '<line class="m-street" x1="0" y1="300" x2="360" y2="0" stroke-width="16"/>';
+  else s += '<path class="m-street" d="M0 150 Q 180 120 360 160" stroke-width="16" fill="none"/>';
+  r.areas.forEach(function (a) {
+    s += '<rect class="m-park' + (a.id === near.a.id ? ' near' : '') + '" x="' + a.x + '" y="' + a.y + '" width="' + a.w + '" height="' + a.h + '" rx="8"/>';
+    s += '<text class="m-label" x="' + (a.x + a.w / 2) + '" y="' + (a.y + a.h / 2 + 4) + '" text-anchor="middle">' + esc(L(a)) + '</text>';
+  });
+  var mt = r.areas.filter(function (a) { return a.id === meetId; })[0];
+  if (mt) { var mx = mt.x + mt.w - 10, my = mt.y + 10; s += '<path class="m-meet" d="M' + mx + ' ' + (my - 9) + 'l9 9l-9 9l-9 -9z"/>'; }
+  s += '<path class="m-route" d="M' + y.x + ' ' + y.y + ' L' + near.cx + ' ' + near.cy + '"/>';
+  s += '<circle class="m-pulse" cx="' + y.x + '" cy="' + y.y + '" r="7"/><circle class="m-you" cx="' + y.x + '" cy="' + y.y + '" r="8"/>';
+  s += '<text class="m-label" x="' + (y.x + 13) + '" y="' + (y.y + 4) + '">' + esc(t('legYou').split(' (')[0]) + '</text>';
+  s += '<g transform="translate(332 30)"><circle class="m-compass" r="15" opacity=".85"/><path d="M0 -10 L5 4 L0 1 L-5 4 Z" fill="currentColor" class="m-label"/><text class="m-label" y="13" text-anchor="middle" font-size="8">N</text></g>';
+  s += '</svg>';
+  return s;
+}
+function nearestCard(dark) {
+  var n = nearestArea(), inf = areaInfo(n.a), alt = n.a.small ? reg().areas.filter(function (a) { return a.id === n.a.alt; })[0] : null;
+  var h = '<div class="' + (dark ? 'tip' : 'card') + '">';
+  h += '<div class="row"><div class="compass" aria-hidden="true"><svg viewBox="0 0 24 24" style="transform:rotate(' + Math.round(inf.ang) + 'deg)">' + I.arrow.replace(/<\/?svg[^>]*>/g, '') + '</svg></div>';
+  h += '<div class="grow"><div class="eyebrow">' + t('nearest') + '</div><h3>' + esc(L(n.a)) + '</h3><p class="muted small">' + t('dir') + ': ' + inf.dir + ' · ' + t('walk', { n: inf.min }) + '</p></div>';
+  h += '<div class="big-num">' + inf.m + '<span class="small muted"> ' + t('m') + '</span></div></div>';
+  if (alt) h += '<p><span class="tag warn">!</span> ' + esc(t('small', { alt: L(alt) })) + '</p>';
+  h += '<p class="small muted">' + t('mapData') + '</p></div>';
+  return h;
+}
+
+/* ---------- views ---------- */
+function vHome() {
+  var sc = score(), C = 2 * Math.PI * 40, off = C * (1 - sc / 100), r = st.region, ns = nextStep();
+  var items = kitItems(), got = items.filter(function (i) { return st.kit[i.id]; }).length;
+  var meetA = reg().areas.filter(function (a) { return a.id === st.meet[st.region]; })[0];
+  var near = nearestArea(), inf = areaInfo(near.a);
+  var open = st.board[r].filter(function (p) { return !p.verified && p.status === 'open'; }).length;
+  var h = '<div class="hello"><h2>' + esc(t('hello2', { n: st.me.ad })) + '</h2><p class="muted">' + t('homeLead') + '</p></div>';
+  h += '<div class="card"><div class="score"><div class="ring"><svg viewBox="0 0 92 92"><circle class="track" cx="46" cy="46" r="40" stroke-width="10" fill="none"/><circle class="fill" cx="46" cy="46" r="40" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '"/></svg><div class="num">' + sc + '</div></div>';
+  h += '<div class="grow"><div class="eyebrow">' + t('score') + '</div>';
+  h += ns ? '<p><strong>' + t('next') + ':</strong> ' + esc(ns) + '</p><button class="btn primary sm" data-act="tab" data-v="kit" style="margin-top:8px">' + t('tKit') + '</button>' : '<p>' + t('allDone') + '</p>';
+  h += '</div></div></div>';
+  h += '<button class="alarm" data-act="afet-open"><span class="ic">' + I.safe.replace('<svg', '<svg width="28" height="28"') + '</span><span><b>' + t('openAfet') + '</b><span>' + t('afetSub') + '</span></span></button>';
+  h += '<div class="tiles">';
+  h += '<button class="tile kit" data-act="tab" data-v="kit"><span class="ti">' + I.kit + '</span><span><b>' + t('tKit') + '</b><small>' + t('tileKit', { a: got, b: items.length }) + '</small></span></button>';
+  h += '<button class="tile fam" data-act="tab" data-v="family"><span class="ti">' + I.fam + '</span><span><b>' + t('tFam') + '</b><small>' + esc(t('tileMeet', { m: meetA ? L(meetA) : '' })) + '</small></span></button>';
+  h += '<button class="tile map" data-act="tab" data-v="map"><span class="ti">' + I.map + '</span><span><b>' + t('tMap') + '</b><small>' + t('tileMap', { n: inf.m }) + '</small></span></button>';
+  h += '<button class="tile board" data-act="tab" data-v="board"><span class="ti">' + I.board + '</span><span><b>' + t('tBoard') + '</b><small>' + t('tileBoard', { n: open }) + '</small></span></button>';
+  h += '</div>';
+  h += '<div class="card tint"><div class="eyebrow">' + t(r) + ' · ' + t(r + 'Fault') + '</div><p>' + t(r + 'Note') + '</p></div>';
+  return h;
+}
+function vKit() {
+  var items = kitItems(), got = items.filter(function (i) { return st.kit[i.id]; }).length;
+  var h = '<div><h2>' + t('kitTitle') + '</h2><p class="muted small">' + t('kitSub') + '</p></div>';
+  h += '<div class="card"><div class="row"><strong class="grow">' + t('kitProg', { a: got, b: items.length }) + '</strong><span class="tag go">' + t('offline') + '</span></div><div class="bar"><i style="width:' + Math.round(got / items.length * 100) + '%"></i></div></div>';
+  h += '<div class="list">';
+  KIT.forEach(function (i) { h += checkRow(i); });
+  h += '</div><div class="eyebrow">' + t('regional') + ' · ' + t(st.region) + '</div><div class="list">';
+  reg().extras.forEach(function (i) { h += checkRow(i); });
+  return h + '</div>';
+}
+function checkRow(i) {
+  var on = !!st.kit[i.id];
+  return '<div class="check' + (on ? ' done' : '') + '"><input type="checkbox" id="k_' + i.id + '" data-kit="' + i.id + '"' + (on ? ' checked' : '') + '><label for="k_' + i.id + '">' + esc(L(i)) + '</label></div>';
+}
+function vMap(dark) {
+  var h = dark ? '' : '<div><h2>' + t('mapTitle') + '</h2><p class="small muted"><span class="tag go">' + t('offline') + '</span> <span class="tag">' + t('example') + '</span></p></div>';
+  h += locLine(false);
+  h += '<div class="seg" role="group" style="align-self:flex-start"><button data-act="mapview" data-v="map" aria-pressed="' + (st.mapView === 'map') + '">' + t('mapView') + '</button><button data-act="mapview" data-v="list" aria-pressed="' + (st.mapView === 'list') + '">' + t('listView') + '</button></div>';
+  if (st.mapView === 'map') {
+    h += '<div class="mapbox" dir="ltr">' + mapSVG() + '</div>';
+    h += '<div class="legend"><span><i style="background:var(--park);border:1px solid var(--park-line)"></i>' + t('legArea') + '</span><span><i style="background:var(--signal);transform:rotate(45deg)"></i>' + t('legMeet') + '</span><span><i style="background:#1E6FD9;border-radius:50%"></i>' + t('legYou') + '</span></div>';
+  } else {
+    h += '<div class="' + (dark ? 'tip' : 'card') + '">';
+    reg().areas.map(function (a) { return { a: a, i: areaInfo(a) }; }).sort(function (x, y) { return x.i.m - y.i.m; }).forEach(function (o) {
+      h += '<div class="person"><div class="grow"><strong>' + esc(L(o.a)) + '</strong>' + (o.a.id === st.meet[st.region] ? ' <span class="tag sig">' + t('legMeet') + '</span>' : '') + '<div class="small muted">' + o.i.dir + ' · ' + t('walk', { n: o.i.min }) + '</div></div><div class="big-num" style="font-size:1.4rem">' + o.i.m + ' ' + t('m') + '</div></div>';
+    });
+    h += '</div>';
+  }
+  h += nearestCard(dark);
+  return h;
+}
+function ago(min) { return min < 60 ? t('mAgo', { n: min }) : t('hAgo', { n: Math.round(min / 60) }); }
+function vBoard() {
+  var h = '<div class="row"><div class="grow"><h2>' + t('boardTitle') + '</h2><p class="small muted">' + t('boardSub') + '</p></div><button class="btn signal sm" data-act="need-open">+ ' + t('addNeed') + '</button></div>';
+  h += '<div class="filters" role="group"><button data-act="filter" data-v="all" aria-pressed="' + (st.filter === 'all') + '">' + t('all') + '</button>';
+  CATS.forEach(function (c) { h += '<button data-act="filter" data-v="' + c + '" aria-pressed="' + (st.filter === c) + '">' + t(c) + '</button>'; });
+  h += '</div>';
+  if (st.sheet === 'need' && !st.afet) h += needForm(false);
+  st.board[st.region].forEach(function (p) {
+    if (p.verified) { if (st.filter === 'all') h += '<div class="post verified"><div class="post-head"><span class="tag go">' + I.check + ' ' + t('verified') + '</span><span class="when">' + ago(p.age) + '</span></div><p>' + esc(L(p)) + '</p></div>'; return; }
+    if (st.filter !== 'all' && st.filter !== p.cat) return;
+    var stale = p.status === 'open' && p.age >= 720;
+    var steps = ['open', 'claimed', 'done'].map(function (s) { return '<span class="' + (p.status === s ? 'on' : '') + '">' + t(s) + '</span>'; }).join('');
+    var amount = p.unit === 'ppl' ? t('ppl', { n: p.qty }) : t('pcs', { n: p.qty });
+    h += '<div class="post' + (stale ? ' stale' : '') + '"><div class="post-head"><div class="cat-ico" aria-hidden="true">' + I[p.cat] + '</div><strong>' + t(p.cat) + '</strong><span class="tag">' + amount + '</span>' + (p.mine ? '<span class="tag sig">' + t('mine') + '</span>' : '') + '<span class="when">' + ago(p.age) + '</span></div>';
+    if (L(p)) h += '<p>' + esc(L(p)) + '</p>';
+    if (p.mine && p.sync) h += '<p class="small"><span class="tag ' + (p.sync === 'q' ? 'warn' : 'go') + '">' + t(p.sync === 'q' ? 'syncQ' : p.sync === 'mesh' ? 'syncMesh' : 'syncOk') + '</span></p>';
+    if (stale) h += '<p class="small"><span class="tag warn">!</span> ' + t('stale') + '</p>';
+    h += '<div class="steps" aria-label="' + t(p.status) + '">' + steps + '</div>';
+    if (!p.mine && p.status === 'open') h += '<button class="btn sm" data-act="claim" data-v="' + p.id + '">' + t('claim') + '</button>';
+    if (p.byMe && p.status === 'claimed') h += '<button class="btn sm primary" data-act="deliver" data-v="' + p.id + '">' + t('deliver') + '</button>';
+    h += '</div>';
+  });
+  return h;
+}
+function needForm(dark) {
+  var h = '<div class="' + (dark ? 'sheet' : 'card') + '"><h3>' + t('helpQ') + '</h3><div class="filters" role="group">';
+  CATS.forEach(function (c) { h += '<button data-act="needcat" data-v="' + c + '" aria-pressed="' + (st.needCat === c) + '">' + t(c) + '</button>'; });
+  h += '</div><label class="field" for="needQty"><span>' + t('qty') + '</span><input class="full" id="needQty" type="number" min="1" max="99" value="2" inputmode="numeric"></label>';
+  h += '<label class="field" for="needNote"><span>' + t('note') + '</span><input class="full" id="needNote" type="text" maxlength="80" placeholder="' + esc(t('notePh')) + '"></label>';
+  h += '<div class="row"><button class="btn ' + (dark ? 'signal' : 'primary') + ' grow" data-act="need-post">' + t('postNeed') + '</button><button class="btn" data-act="sheet-close">' + t('cancel') + '</button></div></div>';
+  return h;
+}
+
+/* ---------- emergency layer ---------- */
+function vAfet() {
+  var c = st.conn, wait = st.outbox.filter(function (m) { return m.status === 'wait'; }).length;
+  var h = '<div class="afet" role="dialog" aria-modal="true" aria-label="' + esc(t('openAfet')) + '"><div class="afet-in">';
+  h += '<div class="conn"><span class="dot ' + c + '"></span><span>' + t(c) + '<br><small>' + (c === 'mesh' ? t('meshN', { n: st.region === 'ist' ? '4–9' : '0–3' }) : wait ? t('queued', { n: wait }) : t('allSent')) + '</small></span><button class="cyc" data-act="cycle">' + t('cycle') + '</button></div>';
+  if (st.sheet === 'help') {
+    h += '<div class="sheet"><h3 style="font-size:1.2rem">' + t('helpQ') + '</h3><div class="opts"><button class="trap" data-act="trapped">' + I.sos + t('trapped') + '</button>';
+    CATS.forEach(function (k) { h += '<button data-act="quickneed" data-v="' + k + '">' + I[k] + t(k) + '</button>'; });
+    h += '</div><button class="btn" data-act="sheet-close">' + t('back') + '</button></div>';
+  } else if (st.sheet === 'trapped' || st.sheet === 'sos') {
+    var tr = st.sheet === 'trapped';
+    h += '<div class="sheet" style="align-items:flex-start"><div class="eyebrow" style="color:#F5C518">' + t(tr ? 'trappedTitle' : 'sosTitle') + '</div><div class="num112">112</div><p>' + t(tr ? 'trappedBody' : 'sosBody') + '</p><div class="row" style="width:100%"><a class="btn signal grow" href="tel:112" style="text-decoration:none">' + t('call') + '</a><button class="btn" data-act="sheet-close">' + t('back') + '</button></div></div>';
+  } else if (st.sheet === 'need') {
+    h += needForm(true);
+  } else if (st.sheet === 'area') {
+    h += vMap(true) + '<button class="btn" data-act="sheet-close">' + t('back') + '</button>';
+  } else {
+    h += '<div><div class="eyebrow" style="color:#A9B4AF;margin-bottom:6px">' + t('since') + '</div><div class="phase" role="group">';
+    for (var i = 0; i < 4; i++) h += '<button data-act="phase" data-v="' + i + '" aria-pressed="' + (st.phase === i) + '">' + t('p' + i) + '</button>';
+    h += '</div></div>';
+    var tip = t('tip' + st.phase) + (st.phase >= 2 && st.region === 'mal' ? ' ' + t('tipMal') : '') + (st.phase === 0 && st.region === 'ist' ? ' ' + t('tipIst') : '');
+    h += '<div class="tip"><div class="row"><div class="eyebrow grow">' + t('p' + st.phase) + '</div><button class="btn sm" data-act="speak" aria-label="' + t('read') + '">' + I.speak + t('read') + '</button></div><p id="tipText">' + esc(tip) + '</p></div>';
+    h += '<div class="grid4"><button class="bigbtn b-safe" data-act="safe">' + I.safe + t('safe') + '</button><button class="bigbtn b-help" data-act="help">' + I.help + t('help') + '</button><button class="bigbtn b-area" data-act="area">' + I.map + t('area') + '</button><button class="bigbtn b-sos" data-act="sos">' + I.sos + t('sos') + '</button></div>';
+    h += '<div class="tools"><button data-act="whistle" aria-pressed="' + st.whistle + '">' + I.whistle + t('whistle') + '</button><button data-act="torch">' + I.torch + t('torch') + '</button><button data-act="afet-close" aria-label="' + t('exitFull') + '">' + I.exit + t('exit') + '</button></div>';
+  }
+  if (st.outbox.length) {
+    h += '<div class="outbox"><div class="eyebrow" style="color:#A9B4AF">' + t('outbox') + '</div>';
+    st.outbox.slice().reverse().forEach(function (m) {
+      var cls = m.status === 'ok' ? 'ok' : m.status === 'wait' ? 'wait' : 'go';
+      var lab = m.status === 'ok' ? (m.via === 'net' ? t('viaNet') : m.via === 'sms' ? t('viaSms') : t('viaMesh', { n: m.n })) : m.status === 'wait' ? t('waiting') : m.status === 'undo' ? t('undoWin') : t('sending');
+      h += '<div class="msg">' + (m.kind === 'safe' ? I.safe.replace('<svg', '<svg width="20" height="20"') : I[m.cat].replace('<svg', '<svg width="20" height="20"')) + '<span>' + esc(m.text) + '</span><span class="st ' + cls + '">' + lab + '</span></div>';
+    });
+    h += '</div>';
+  }
+  return h + '</div></div>';
+}
+
+/* ---------- whistle (Web Audio, starts from a tap) ---------- */
+var audio = null, whistleTimer = null;
+function startWhistle() {
+  try {
+    if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+    if (audio.state === 'suspended') audio.resume();
+    var pattern = [1, 1, 1, 3, 3, 3, 1, 1, 1], i = 0;
+    var beep = function () {
+      if (!st.whistle) return;
+      var len = pattern[i % pattern.length] * 0.18, o = audio.createOscillator(), g = audio.createGain();
+      o.type = 'sine'; o.frequency.value = 3150; g.gain.value = 0.0001;
+      o.connect(g); g.connect(audio.destination);
+      var now = audio.currentTime; g.gain.exponentialRampToValueAtTime(0.5, now + 0.02); g.gain.setValueAtTime(0.5, now + len); g.gain.exponentialRampToValueAtTime(0.0001, now + len + 0.03);
+      o.start(now); o.stop(now + len + 0.05);
+      i++; whistleTimer = setTimeout(beep, (len + 0.16) * 1000 + (i % 9 === 0 ? 900 : 0));
+    };
+    beep();
+  } catch (e) { st.whistle = false; }
+}
+function stopWhistle() { clearTimeout(whistleTimer); }
+
+/* ---------- render ---------- */
+function render() {
+  var root = document.documentElement;
+  root.lang = st.lang; root.dir = st.lang === 'ar' ? 'rtl' : 'ltr';
+  root.classList.toggle('big', !!st.big);
+  root.classList.toggle('afet-on', !!st.afet);
+  var wait = st.outbox.filter(function (m) { return m.status === 'wait'; }).length;
+  var h = '<div class="app"><header class="top"><div class="brand"><div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V10l5-4 4 3 4-3 5 4v10"/><path d="M9 20v-5h6v5"/></svg></div><div><h1>Hazır Mahalle</h1><small>' + t('sub') + '</small></div></div>';
+  h += '<div class="top-tools"><div class="lang" role="group" aria-label="Dil / Language / اللغة">';
+  [['tr', 'TR', 'Türkçe'], ['ar', 'ع', 'العربية'], ['en', 'EN', 'English']].forEach(function (l) { h += '<button data-act="lang" data-v="' + l[0] + '" aria-pressed="' + (st.lang === l[0]) + '" aria-label="' + l[2] + '" lang="' + l[0] + '">' + l[1] + '</button>'; });
+  h += '</div><button class="chip-btn" data-act="big" aria-pressed="' + !!st.big + '" aria-label="' + t('big') + '" title="' + t('big') + '">A+</button></div></header>';
+  var ready = st.me && (st.locPerm === 'granted' || st.locPerm === 'once');
+  h += '<div class="statusbar"><span class="dot ' + st.conn + '"></span>' + t(st.conn) + ' · ' + t(st.region) + (ready ? locLine(true) : '') + '<span class="q">' + (wait ? t('queued', { n: wait }) : t('allSent')) + '</span></div>';
+  h += '<main id="main">';
+  if (!st.me) h += vRegister();
+  else if (!ready) h += vLocGate();
+  else h += st.tab === 'home' ? vHome() : st.tab === 'kit' ? vKit() : st.tab === 'family' ? vFamily() : st.tab === 'map' ? vMap(false) : vBoard();
+  h += '</main>';
+  if (ready) {
+    h += '<nav class="tabs" aria-label="' + t('tHome') + '">';
+    [['home', 'tHome', I.home], ['kit', 'tKit', I.kit], ['family', 'tFam', I.fam], ['map', 'tMap', I.map], ['board', 'tBoard', I.board]].forEach(function (x) {
+      h += '<button data-act="tab" data-v="' + x[0] + '"' + (st.tab === x[0] ? ' aria-current="page"' : '') + '><span class="pill">' + x[2] + '</span><span>' + t(x[1]) + '</span></button>';
+    });
+    h += '</nav>';
+  }
+  h += '</div>';
+  h += '<details class="proto" id="demo"' + (st.demoOpen ? ' open' : '') + '><summary><span class="demo-badge">DEMO</span>' + t('demo') + '<span class="state"><span class="dot ' + st.conn + '"></span>' + t(st.conn) + ' · ' + t(st.region) + '<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></span></summary><div class="proto-body"><p>' + t('demoNote') + '</p>';
+  h += '<div class="proto-row"><label>' + t('conn') + '</label><div class="seg" role="group">';
+  ['internet', 'sms', 'mesh', 'none'].forEach(function (c) { h += '<button data-act="conn" data-v="' + c + '" aria-pressed="' + (st.conn === c) + '">' + t(c) + '</button>'; });
+  h += '</div></div><div class="proto-row"><label>' + t('region') + '</label><div class="seg" role="group">';
+  ['mal', 'ist'].forEach(function (r) { h += '<button data-act="region" data-v="' + r + '" aria-pressed="' + (st.region === r) + '">' + t(r) + '</button>'; });
+  h += '</div></div><p>' + t('demoCodes', { c: Object.keys(DIRECTORY).join(', ') }) + '</p><button class="btn sm" data-act="reopen">' + t('reopen') + '</button></div></details><p class="foot">' + t('foot') + '</p>';
+  document.getElementById('root').innerHTML = h;
+  var d = document.getElementById('demo');
+  if (d) d.addEventListener('toggle', function () { st.demoOpen = d.open; });
+  renderLayer();
+}
+function renderLayer() {
+  var h = '';
+  if (st.afet) h += vAfet();
+  if (st.osDialog) h += osDialog();
+  if (st.torch) h += '<button class="torch" data-act="torch-off">' + t('torchOff') + '</button>';
+  if (st.toast) h += '<div class="toast" role="status"><span>' + esc(st.toast.text) + '</span>' + (st.toast.action ? '<button data-act="undo">' + t('undo') + '</button>' : '') + '</div>';
+  document.getElementById('layer').innerHTML = h;
+}
+
+/* ---------- events ---------- */
+var undoTimer = null;
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-act]'); if (!b) return;
+  var a = b.getAttribute('data-act'), v = b.getAttribute('data-v');
+  switch (a) {
+    case 'lang': st.lang = v; save('lang', v); if (!st.me) st.regDraft = readReg(); render(); break;
+    case 'loc-ask': st.osDialog = true; renderLayer(); var fb = document.querySelector('.osdlg button'); if (fb) fb.focus(); break;
+    case 'loc-res': st.osDialog = false; st.locPerm = v; if (v !== 'denied') newFix(false); render(); window.scrollTo(0, 0); break;
+    case 'relocate': newFix(true); toast(st.conn === 'none' ? t('locNoNet') : t('locUpdated')); render(); break;
+    case 'reopen': st.locPerm = null; st.afet = false; st.sheet = null; render(); window.scrollTo(0, 0); break;
+    case 'copy':
+      var codeTxt = st.me.code;
+      try { navigator.clipboard.writeText(codeTxt).then(function () { toast(t('copied')); }, function () { selectCode(); toast(t('copyFail')); }); }
+      catch (err) { selectCode(); toast(t('copyFail')); }
+      break;
+    case 'inc-ok': var qi = st.incoming.splice(+v, 1)[0]; if (qi) { st.fam.push({ code: qi.code, name: qi.name, ini: qi.ini, safe: null }); saveFam(); toast(t('approved', { n: qi.name })); } render(); break;
+    case 'inc-no': st.incoming.splice(+v, 1); saveFam(); toast(t('rejected')); render(); break;
+    case 'del-ask': st.confirmDel = true; render(); break;
+    case 'del-no': st.confirmDel = false; render(); break;
+    case 'del-yes':
+      ['me', 'fam', 'reqs', 'incoming', 'fix', 'kit', 'meet'].forEach(function (k) { try { localStorage.removeItem('hm_' + k); } catch (err) {} });
+      st.me = null; st.fam = JSON.parse(JSON.stringify(FAM_SEED)); st.reqs = []; st.incoming = [{ code: 'HM-QQUS-YH6Z', name: 'Selin Yılmaz', ini: 'S' }]; st.fix = null; st.locPerm = null; st.confirmDel = false; st.tab = 'home';
+      render(); window.scrollTo(0, 0); break;
+    case 'cycle': var order = ['internet', 'sms', 'mesh', 'none'], nx = order[(order.indexOf(st.conn) + 1) % 4]; st.conn = nx; if (nx !== 'none') { flushQueue(); flushReqs(); } if (nx === 'mesh') toast(t('meshN', { n: st.region === 'ist' ? '4–9' : '0–3' })); render(); break;
+    case 'tab': st.tab = v; st.sheet = null; render(); window.scrollTo(0, 0); break;
+    case 'conn': var was = st.conn; st.conn = v; if (v !== 'none' && was !== v) { flushQueue(); flushReqs(); } if (v === 'mesh') toast(st.region === 'ist' ? t('meshN', { n: '4–9' }) : t('meshN', { n: '0–3' })); render(); break;
+    case 'region': st.region = v; save('region', v); st.sheet = null; st.filter = 'all'; render(); break;
+    case 'big': st.big = !st.big; save('big', st.big); render(); break;
+    case 'afet-open': st.afet = true; st.sheet = null; render(); break;
+    case 'afet-close': st.afet = false; st.sheet = null; st.whistle = false; stopWhistle(); render(); break;
+    case 'phase': st.phase = +v; renderLayer(); break;
+    case 'safe':
+      var m = { id: st.seq++, kind: 'safe', text: t('safeMsg'), status: 'undo' };
+      st.outbox.push(m);
+      clearTimeout(undoTimer);
+      undoTimer = setTimeout(function () { if (m.status === 'undo') { dispatch(m); render(); } }, 5000);
+      st.lastUndo = m; toast(t('safeToast'), 'undo'); render(); break;
+    case 'undo':
+      if (st.lastUndo && st.lastUndo.status === 'undo') { st.outbox = st.outbox.filter(function (x) { return x !== st.lastUndo; }); clearTimeout(undoTimer); toast(t('undone')); }
+      render(); break;
+    case 'help': st.sheet = 'help'; renderLayer(); break;
+    case 'trapped': st.sheet = 'trapped'; renderLayer(); break;
+    case 'sos': st.sheet = 'sos'; renderLayer(); break;
+    case 'area': st.sheet = 'area'; renderLayer(); break;
+    case 'quickneed': st.needCat = v; st.sheet = 'need'; renderLayer(); break;
+    case 'need-open': st.sheet = 'need'; render(); break;
+    case 'needcat': st.needCat = v; if (st.afet) renderLayer(); else render(); break;
+    case 'sheet-close': st.sheet = (st.afet && st.sheet === 'need') ? 'help' : null; if (st.afet) renderLayer(); else render(); break;
+    case 'need-post': postNeed(); break;
+    case 'mapview': st.mapView = v; if (st.afet) renderLayer(); else render(); break;
+    case 'filter': st.filter = v; render(); break;
+    case 'claim':
+      if (st.mineClaims >= 3) { toast(t('maxClaims')); break; }
+      var p = findPost(v); if (p) { p.status = 'claimed'; p.byMe = true; st.mineClaims++; } render(); break;
+    case 'deliver': var q = findPost(v); if (q) { q.status = 'done'; st.mineClaims = Math.max(0, st.mineClaims - 1); } render(); break;
+    case 'torch': st.torch = true; renderLayer(); break;
+    case 'torch-off': st.torch = false; renderLayer(); break;
+    case 'whistle': st.whistle = !st.whistle; if (st.whistle) startWhistle(); else stopWhistle(); renderLayer(); break;
+    case 'speak':
+      try { var u = new SpeechSynthesisUtterance(document.getElementById('tipText').textContent); u.lang = st.lang === 'ar' ? 'ar-SA' : st.lang === 'en' ? 'en-GB' : 'tr-TR'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (err) {}
+      break;
+  }
+});
+function selectCode() { var el = document.getElementById('myCode'); if (!el) return; try { var r = document.createRange(); r.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); } catch (err) {} }
+document.addEventListener('submit', function (e) {
+  if (e.target.id === 'regForm') { e.preventDefault(); submitReg(); }
+  else if (e.target.id === 'codeForm') { e.preventDefault(); submitCode(); }
+});
+document.addEventListener('input', function (e) {
+  if (e.target.id === 'codeIn') { var n = normCode(e.target.value); if (n !== e.target.value) e.target.value = n; st.codeDraft = n; }
+});
+document.addEventListener('change', function (e) {
+  var el = e.target;
+  if (el.id === 'rIl') { st.regDraft = readReg(); st.regDraft.ilce = ''; st.region = el.value; render(); var f = document.getElementById('rIl'); if (f) f.focus(); return; }
+  if (el.dataset.kit) { st.kit[el.dataset.kit] = el.checked; save('kit', st.kit); render(); var f = document.getElementById('k_' + el.dataset.kit); if (f) f.focus(); return; }
+  if (el.dataset.meet) { st.meet[st.region] = el.value; save('meet', st.meet); render(); }
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (st.torch) { st.torch = false; renderLayer(); } else if (st.sheet) { st.sheet = null; if (st.afet) renderLayer(); else render(); } } });
+
+function postNeed() {
+  var qEl = document.getElementById('needQty'), nEl = document.getElementById('needNote');
+  var qty = Math.max(1, Math.min(99, parseInt(qEl && qEl.value, 10) || 1)), note = (nEl && nEl.value || '').trim();
+  var id = 'u' + (st.seq++);
+  var post = { id: id, cat: st.needCat, qty: qty, unit: 'pcs', age: 0, status: 'open', mine: true, tr: note, en: note, ar: note, sync: 'q' };
+  st.board[st.region].splice(1, 0, post);
+  var m = { id: st.seq++, kind: 'need', cat: st.needCat, postId: id, text: t(st.needCat) + ' · ' + t('pcs', { n: qty }), status: 'go' };
+  st.outbox.push(m);
+  dispatch(m);
+  var msg = m.status === 'ok' ? t('postedOk') : m.status === 'go' ? t('postedMesh', { n: m.n }) : t('postedQ');
+  st.sheet = null; if (!st.afet) { st.tab = 'board'; st.filter = 'all'; }
+  toast(msg); render();
+}
+
+render();
+})();
+</script>
